@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zizion Tournament Bracket Generator</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            /* Tema Default (Zizion Light) */
+            --bg-main: #FFFFF0; 
+            --bg-card: #FFFFFF;
+            --bg-input: #F8FBFB;
+            --accent: #82d0c8;
+            --accent-hover: #6cbab2;
+            --text-main: #2c4c46; 
+            --text-muted: #6b9e95;
+            --border-color: #a3d9d2;
+            --line-color: #82d0c8;
+            --match-bg: #FFFFFF;
+            --winner-bg: #E6F7F5;
+            --bronze-bg: #FCF8F2; 
+            --bronze-border: #d4af37;
+        }
+
+        /* --- TEMA: ESPORTS DARK MODE --- */
+        body.theme-esports {
+            --bg-main: #121212; 
+            --bg-card: #1E1E1E;
+            --bg-input: #2A2A2A;
+            --accent: #00ffff;
+            --accent-hover: #9d00ff;
+            --text-main: #ffffff; 
+            --text-muted: #888888;
+            --border-color: #333333;
+            --line-color: #00ffff;
+            --match-bg: #1a1a1a;
+            --winner-bg: rgba(0, 255, 255, 0.1);
+            --bronze-bg: #1e1505; 
+            --bronze-border: #d4af37;
+            background-image: none;
+        }
+
+        /* --- TEMA: DYNAMIC SPORTS --- */
+        body.theme-sports {
+            --bg-main: #0B2545; 
+            --bg-card: #133A6B;
+            --bg-input: #0D2D54;
+            --accent: #FF6B35;
+            --accent-hover: #ff8559;
+            --text-main: #ffffff; 
+            --text-muted: #b0c4de;
+            --border-color: #245A96;
+            --line-color: #FF6B35;
+            --match-bg: #103059;
+            --winner-bg: rgba(255, 107, 53, 0.15);
+            --bronze-bg: #4a2e0a; 
+            --bronze-border: #fca311;
+            background-image: none;
+        }
+
+        /* --- TEMA: MINIMALIST PRO --- */
+        body.theme-minimalist {
+            --bg-main: #f5f5f5; 
+            --bg-card: #ffffff;
+            --bg-input: #fafafa;
+            --accent: #000000;
+            --accent-hover: #333333;
+            --text-main: #000000; 
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --line-color: #000000;
+            --match-bg: #ffffff;
+            --winner-bg: #f0f0f0;
+            --bronze-bg: #fafafa; 
+            --bronze-border: #555555;
+            background-image: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(130, 208, 200, 0.15), transparent 30%),
+                radial-gradient(circle at 85% 20%, rgba(130, 208, 200, 0.15), transparent 30%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            transition: background-color 0.4s, color 0.4s;
+        }
+
+        /* --- THEME SWITCHER MENU --- */
+        .theme-switcher-wrapper {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .theme-switcher-wrapper label { margin: 0; font-size: 12px; }
+        .theme-switcher-wrapper select { padding: 6px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+
+        .header {
+            text-align: center; margin-bottom: 40px; background: rgba(255, 255, 255, 0.9);
+            padding: 20px 40px; border-radius: 20px; display: inline-block;
+            border: 2px solid var(--border-color); box-shadow: 0 10px 30px rgba(130, 208, 200, 0.15);
+            backdrop-filter: blur(5px);
+        }
+        body.theme-esports .header, body.theme-sports .header, body.theme-minimalist .header {
+            background: var(--bg-card);
+        }
+        .header-wrapper { display: flex; justify-content: center; margin-top: 20px; }
+        .header h1 { margin: 0; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
+
+        /* --- UI SETUP CARD --- */
+        .setup-card {
+            background-color: var(--bg-card); border: 2px solid var(--border-color);
+            border-radius: 24px; padding: 40px; max-width: 750px; margin: 0 auto 40px auto;
+            box-shadow: 0 15px 35px rgba(0,0,0, 0.08);
+            transition: all 0.3s;
+        }
+
+        .section-title { font-size: 18px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        
+        .input-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+        
+        input[type="text"], textarea, select {
+            width: 100%; background-color: var(--bg-input); border: 2px solid var(--border-color);
+            border-radius: 12px; color: var(--text-main); padding: 14px; font-size: 15px;
+            box-sizing: border-box; outline: none; transition: all 0.3s; font-family: inherit; font-weight: 600;
+        }
+        textarea { height: 120px; resize: vertical; }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(130, 208, 200, 0.3); }
+
+        /* --- FORMAT CARDS UPDATE --- */
+        .format-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .format-card {
+            background: var(--bg-input); border: 2px solid var(--border-color); border-radius: 16px;
+            padding: 15px; cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .format-card.active { background: var(--accent); border-color: var(--text-main); color: var(--bg-main); transform: scale(1.02); }
+        .format-card.active .format-desc { color: inherit; opacity: 0.9; }
+        .format-card:hover:not(.active) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0, 0.1); }
+        
+        .format-title { font-size: 16px; font-weight: 800; margin-bottom: 5px; }
+        .format-desc { font-size: 12px; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
+
+        /* --- TOGGLE SWITCH --- */
+        .settings-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; background: var(--bg-input); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+        .toggle-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--text-muted); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        button.btn-primary {
+            background-color: var(--text-main); color: var(--bg-main); border: none; padding: 18px 20px;
+            font-size: 16px; font-weight: 800; border-radius: 16px; cursor: pointer; width: 100%;
+            text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s;
+        }
+        button.btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0, 0.2); }
+
+        .error-msg { background: #fbe6e9; color: #d16d7a; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none; font-weight: 600; border-left: 5px solid #d16d7a; }
+
+        /* --- BRACKET DISPLAY --- */
+        .title-wrapper { display: flex; justify-content: center; flex-direction: column; align-items: center; }
+        .tournament-title-display { font-size: 2rem; margin-bottom: 5px; display: none; text-transform: uppercase; font-weight: 900; background: var(--bg-card); padding: 10px 30px; border-radius: 16px; border: 2px solid var(--border-color); }
+        .tournament-subtitle { display: none; font-size: 1rem; font-weight: 700; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* STICKY ACTION BAR */
+        .action-bar-wrapper {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            display: none; /* diubah menjadi flex via JS */
+            margin-bottom: 20px;
+        }
+        
+        .action-bar { 
+            width: 100%; display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 30px; background: var(--bg-card); border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 2px solid var(--border-color); 
+        }
+        
+        .action-bar-left { display: flex; align-items: center; gap: 20px; }
+        .zoom-controls { display: flex; gap: 5px; background: var(--bg-input); padding: 5px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .zoom-controls button { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-weight: bold; color: var(--text-main); display:flex; align-items:center; justify-content:center; transition: 0.2s;}
+        .zoom-controls button:hover { background: var(--accent); color: white; border-color: var(--accent); }
+        
+        .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 2px solid var(--border-color); padding: 10px 20px; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .btn-secondary:hover { background: #d16d7a; color: white; border-color: #d16d7a; }
+
+        .bracket-section-title { font-size: 1.5rem; font-weight: 900; margin-top: 40px; margin-left: 20px; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* ZOOM & PAN WRAPPER */
+        .pan-zoom-wrapper {
+            width: 100%;
+            overflow: auto;
+            cursor: grab;
+            border-radius: 16px;
+            padding: 20px;
+            box-sizing: border-box;
+            background: rgba(0,0,0,0.02);
+            border: 1px dashed var(--border-color);
+            min-height: 500px;
+            display: none; /* flex via js */
+        }
+        .pan-zoom-wrapper:active { cursor: grabbing; }
+
+        /* Container dalam yang akan di-zoom */
+        #fullBracketContainer {
+            transform-origin: top left;
+            transition: transform 0.2s ease;
+            width: max-content;
+            padding-right: 50px;
+        }
+
+        .bracket-wrapper { display: flex; gap: 60px; padding: 20px 0; align-items: center; min-height: 400px; padding-bottom: 60px; }
+        .round { display: flex; flex-direction: column; justify-content: space-around; height: 100%; min-width: 290px; position: relative; }
+        .round-title { text-align: center; font-weight: 800; margin-bottom: 30px; text-transform: uppercase; font-size: 14px; letter-spacing: 2px; background: var(--bg-card); padding: 10px; border-radius: 12px; border: 2px solid var(--border-color); }
+        
+        .match-container { display: flex; align-items: center; position: relative; padding: 20px 0; flex: 1; }
+        .match-box { background-color: var(--match-bg); border: 2px solid var(--border-color); border-radius: 16px; width: 100%; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); position: relative; z-index: 2; transition: 0.2s; }
+        .match-box:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15); }
+        
+        .match-id { position: absolute; top: -12px; left: 15px; background: var(--text-main); color: var(--bg-main); font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 800; z-index: 3;}
+        
+        .player-row { display: flex; align-items: center; padding: 15px 20px; font-size: 15px; border-bottom: 2px solid var(--bg-input); cursor: pointer; min-height: 24px; position: relative; z-index: 2;}
+        .player-row:first-child { border-radius: 14px 14px 0 0; }
+        .player-row:last-child { border-bottom: none; border-radius: 0 0 14px 14px; }
+        .player-row:hover { background-color: var(--winner-bg); }
+        
+        .seed-num { color: var(--text-muted); font-size: 12px; width: 24px; font-weight: 800; }
+        .player-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; font-weight: 600; }
+        .player-name.bye { color: var(--text-muted); font-style: italic; font-weight: 400; }
+        .winner { font-weight: 800; background-color: var(--winner-bg); }
+        
+        .score-input { width: 45px; padding: 6px; text-align: center; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-input); font-weight: bold; margin-left: 10px; font-size: 14px; position: relative; z-index: 10; color: var(--text-main); }
+        .score-input:focus { border-color: var(--accent); background: var(--bg-card); }
+        .score-input::-webkit-outer-spin-button, .score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .submit-score-btn { position: absolute; right: -18px; top: 50%; transform: translateY(-50%); background: var(--accent); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
+        .submit-score-btn:hover { background: var(--accent-hover); transform: translateY(-50%) scale(1.1); }
+
+        /* GARIS KONEKTOR KHUSUS ELIMINASI */
+        .bracket-wrapper.draw-lines .match-container::after { content: ""; position: absolute; border-color: var(--line-color); border-style: solid; border-width: 0; z-index: 1; }
+        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container::after { border-right-width: 3px; top: 50%; right: -30px; width: 30px; }
+        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container:nth-child(odd)::after { height: 50%; border-top-width: 3px; border-top-right-radius: 12px; }
+        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container:nth-child(even)::after { height: 50%; bottom: 50%; top: auto; border-bottom-width: 3px; border-bottom-right-radius: 12px; }
+        .bracket-wrapper.draw-lines .round:not(:first-child) .match-container::before { content: ""; position: absolute; left: -30px; top: 50%; width: 30px; border-top: 3px solid var(--line-color); z-index: 1; }
+
+        /* MODE TANPA GARIS */
+        .bracket-wrapper.no-lines { flex-wrap: wrap; gap: 30px; justify-content: flex-start; padding-bottom: 50px; align-items: flex-start; }
+        .bracket-wrapper.no-lines .round { min-width: 300px; flex: 0 0 auto; margin-bottom: 20px; }
+
+        /* --- 3RD PLACE MATCH --- */
+        .third-place-wrapper { position: absolute; bottom: -120px; right: 0; width: 290px; }
+        .third-place-box { background: var(--bronze-bg); border-color: var(--bronze-border); }
+        .third-place-box .match-id { background: var(--bronze-border); color: #fff; }
+
+        /* --- ANIMASI JUARA --- */
+        .celebration-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 20, 18, 0.95);
+            z-index: 9999; justify-content: center; align-items: center; flex-direction: column; 
+            backdrop-filter: blur(8px); 
+        }
+        .celebration-card { 
+            background: linear-gradient(145deg, #1f2b29, #131b19);
+            padding: 60px 80px; border-radius: 30px; text-align: center; 
+            border: 2px solid #5a4b1c; 
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(0,0,0,0.5);
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+            color: #fff; position: relative;
+        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .trophy-icon { font-size: 80px; margin-bottom: 10px; animation: floatTrophy 3s ease-in-out infinite, glowTrophy 2s alternate infinite; filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
+        @keyframes floatTrophy { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glowTrophy { from { filter: drop-shadow(0 0 10px #d4af37); } to { filter: drop-shadow(0 0 35px #fcf6ba); } }
+        
+        .celebration-card h2 { font-size: 1.5rem; color: #d4af37; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; }
+        .winner-name-display { 
+            font-size: 4.5rem; font-weight: 900; margin: 15px 0; 
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; text-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+        }
+        .btn-restart { 
+            background: linear-gradient(90deg, #d4af37, #b38728); color: #131b19; border: none; 
+            padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 16px; 
+            cursor: pointer; margin-top: 30px; text-transform: uppercase; letter-spacing: 2px;
+            transition: all 0.3s; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+        .btn-restart:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); }
+
+        /* --- PANDUAN PENGGUNAAN --- */
+        .guide-section { margin-top: 60px; }
+        .guide-section h3 { font-size: 16px; color: var(--text-main); margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; }
+        .guide-section h4 { font-size: 15px; color: var(--text-main); margin-top: 15px; margin-bottom: 8px; }
+        .guide-section ul, .guide-section ol { line-height: 1.7; color: var(--text-muted); font-weight: 500; padding-left: 20px; }
+        .guide-section li { margin-bottom: 8px; }
+        .guide-section strong { color: var(--text-main); }
+        .footer-copyright { text-align: center; padding: 30px 20px 10px 20px; color: var(--text-muted); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<div class="theme-switcher-wrapper">
+    <label for="themeSelect"><strong>🎨 TEMA:</strong></label>
+    <select id="themeSelect" onchange="changeTheme()">
+        <option value="light">Zizion Light</option>
+        <option value="esports">Esports Dark Mode</option>
+        <option value="sports">Dynamic Sports</option>
+        <option value="minimalist">Minimalist Pro</option>
+    </select>
+</div>
+
+<div class="celebration-overlay" id="celebrationModal">
+    <div class="celebration-card">
+        <div class="trophy-icon">🏆</div>
+        <h2>Tournament Champion</h2>
+        <div class="winner-name-display" id="winnerText">NAMA TIM</div>
+        <p style="color: #a3d9d2; font-size: 1.2rem; font-weight: 600; letter-spacing: 1px;">Berhasil Memenangkan Turnamen!</p>
+        <button class="btn-restart" onclick="closeCelebrationAndReset()">Tutup & Kembali</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header-wrapper" id="mainHeaderWrapper">
+        <div class="header" id="mainHeader"><h1>Zizion Tournament Bracket Generator</h1></div>
+    </div>
+
+    <div class="title-wrapper">
+        <div class="tournament-title-display" id="displayTourneyName"></div>
+        <div class="tournament-subtitle" id="displaySubtitle"></div>
+    </div>
+
+    <div class="action-bar-wrapper" id="actionBarWrapper">
+        <div class="action-bar">
+            <div class="action-bar-left">
+                <div style="font-size: 14px; font-weight: 600;">✨ Masukkan skor dan klik "✓", atau klik nama tim.</div>
+                <div class="zoom-controls">
+                    <button onclick="zoomBracket('out')" title="Zoom Out">➖</button>
+                    <button onclick="zoomBracket('reset')" title="Reset Zoom">🔄</button>
+                    <button onclick="zoomBracket('in')" title="Zoom In">➕</button>
+                </div>
+            </div>
+            <button class="btn-secondary" onclick="forceReset()">↺ Format Ulang (Reset)</button>
+        </div>
+    </div>
+
+    <div class="setup-card" id="setupCard">
+        <div class="error-msg" id="errorMsg"></div>
+        
+        <div class="section-title">1. Format Turnamen</div>
+        <div class="format-grid">
+            <div class="format-card active" onclick="selectFormat('single', this)">
+                <div class="format-title">Eliminasi Tunggal</div>
+                <div class="format-desc">Peserta yang kalah langsung gugur.</div>
+            </div>
+            <div class="format-card" onclick="selectFormat('double', this)">
+                <div class="format-title">Eliminasi Ganda</div>
+                <div class="format-desc">Ada Upper & Lower Bracket. Kalah dua kali gugur.</div>
+            </div>
+            <div class="format-card" onclick="selectFormat('round-robin', this)">
+                <div class="format-title">Round Robin</div>
+                <div class="format-desc">Semua peserta akan bertanding satu sama lain.</div>
+            </div>
+            <div class="format-card" onclick="selectFormat('swiss', this)">
+                <div class="format-title">Sistem Swiss</div>
+                <div class="format-desc">Pertandingan tanpa gugur, penempatan lawan secara dinamis.</div>
+            </div>
+            <div class="format-card" onclick="selectFormat('ffa', this)">
+                <div class="format-title">Free-for-all</div>
+                <div class="format-desc">Banyak peserta dalam 1 pertandingan sekaligus (Grup).</div>
+            </div>
+        </div>
+
+        <div class="section-title">2. Detail & Peserta</div>
+        <div class="input-group">
+            <label>Nama Turnamen</label>
+            <input type="text" id="tourneyName" placeholder="Contoh: Zizion Cup 2024...">
+        </div>
+        <div class="input-group">
+            <label>Daftar Tim (1 baris = 1 tim)</label>
+            <textarea id="participantsInput" placeholder="Ketik nama-nama tim di sini..."></textarea>
+        </div>
+
+        <div class="section-title">3. Pengaturan Turnamen</div>
+        <div class="settings-list">
+            <div class="toggle-row">
+                <span class="toggle-text">Tipe Pertandingan (Match Type)</span>
+                <select id="matchType" style="width: 150px; padding: 8px;">
+                    <option value="BO1">Best of 1</option>
+                    <option value="BO3">Best of 3</option>
+                    <option value="BO5">Best of 5</option>
+                </select>
+            </div>
+            <div class="toggle-row">
+                <span class="toggle-text">Acak Posisi (Shuffle Seeds)</span>
+                <label class="switch"><input type="checkbox" id="randomizeSeeds" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row" id="thirdPlaceRow">
+                <span class="toggle-text">Sertakan pertandingan Perebutan Juara 3</span>
+                <label class="switch"><input type="checkbox" id="include3rdPlace" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+                <span class="toggle-text">Blind Draw (Sembunyikan angka Seed)</span>
+                <label class="switch"><input type="checkbox" id="blindDraw"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="initTournament()">Buat Bracket</button>
+    </div>
+
+    <div class="pan-zoom-wrapper" id="panZoomWrapper">
+        <div id="fullBracketContainer"></div>
+    </div>
+
+    <div class="setup-card guide-section" id="guideCard">
+        <div class="section-title">Panduan Penggunaan Zizion Tournament Bracket Generator</div>
+        <p style="font-size: 15px; line-height: 1.6; color: var(--text-muted); font-weight: 500;">
+            Selamat datang di Zizion Tournament Bracket Generator, solusi profesional untuk mengelola turnamen Anda dengan mudah, cepat, dan presisi. Aplikasi ini dirancang untuk mendukung berbagai format kompetisi agar penyelenggaraan event Anda berjalan lancar.
+        </p>
+        
+        <h3>Fitur-Fitur Utama:</h3>
+        <ul>
+            <li><strong>Auto-Save:</strong> Progres turnamen otomatis tersimpan. Anda bisa menutup browser dan membukanya lagi tanpa kehilangan data.</li>
+            <li><strong>Theme Switcher:</strong> Ubah tema sesuai suasana turnamen (Esports, Sports, Minimalist).</li>
+            <li><strong>Zoom & Geser (Pan):</strong> Navigasi mudah untuk bracket besar dengan fitur zoom dan drag-to-scroll.</li>
+        </ul>
+        
+        <h4>5 Format Turnamen Fleksibel:</h4>
+        <ul>
+            <li><strong>Eliminasi Tunggal:</strong> Sistem gugur standar; peserta yang kalah langsung tereliminasi. Ideal untuk turnamen cepat.</li>
+            <li><strong>Eliminasi Ganda:</strong> Sistem dengan Upper Bracket dan Lower Bracket. Peserta memiliki "nyawa kedua" sebelum benar-benar tereliminasi.</li>
+            <li><strong>Round Robin:</strong> Sistem liga di mana setiap tim akan bertemu satu sama lain.</li>
+            <li><strong>Sistem Swiss:</strong> Format dinamis di mana peserta dengan skor yang sama akan dipertemukan di ronde berikutnya.</li>
+            <li><strong>Free-for-All (FFA):</strong> Pengelompokan peserta dalam grup.</li>
+        </ul>
+    </div>
+
+    <div class="footer-copyright">
+        © ZizionStudio 2026. All Rights Reserved.
+    </div>
+
+</div>
+
+<script>
+    // ================= STATE & VARIABLES =================
+    let tournamentData = []; 
+    let lowerBracketData = []; 
+    let thirdPlaceMatch = null; 
+    let totalRounds = 0;
+    let matchCounter = 1;
+    let fireworksInterval; 
+    let currentFormat = 'single';
+    let config = { thirdPlace: false, blindDraw: false };
+
+    // ================= THEME CHANGER =================
+    function changeTheme() {
+        const theme = document.getElementById('themeSelect').value;
+        document.body.className = ''; // Reset
+        if(theme !== 'light') {
+            document.body.classList.add(`theme-${theme}`);
+        }
+        localStorage.setItem('zizion_theme', theme);
+    }
+    
+    // ================= AUTO-SAVE (LOCAL STORAGE) =================
+    function saveTournamentState() {
+        if(tournamentData.length === 0) return;
+        const state = {
+            tournamentData, lowerBracketData, thirdPlaceMatch, totalRounds, matchCounter, currentFormat, config,
+            tourneyName: document.getElementById('displayTourneyName').innerText,
+            subtitle: document.getElementById('displaySubtitle').innerText
+        };
+        localStorage.setItem('zizion_saved_tournament', JSON.stringify(state));
+    }
+
+    function loadTournamentState() {
+        // Load Theme
+        const savedTheme = localStorage.getItem('zizion_theme');
+        if(savedTheme) {
+            document.getElementById('themeSelect').value = savedTheme;
+            changeTheme();
+        }
+
+        // Load Bracket Data
+        const savedData = localStorage.getItem('zizion_saved_tournament');
+        if (savedData) {
+            const state = JSON.parse(savedData);
+            tournamentData = state.tournamentData;
+            lowerBracketData = state.lowerBracketData;
+            thirdPlaceMatch = state.thirdPlaceMatch;
+            totalRounds = state.totalRounds;
+            matchCounter = state.matchCounter;
+            currentFormat = state.currentFormat;
+            config = state.config;
+
+            document.getElementById('setupCard').style.display = 'none';
+            document.getElementById('guideCard').style.display = 'none';
+            document.getElementById('mainHeaderWrapper').style.display = 'none';
+            
+            document.getElementById('actionBarWrapper').style.display = 'block';
+            document.getElementById('panZoomWrapper').style.display = 'block';
+            
+            const titleDisplay = document.getElementById('displayTourneyName');
+            const subDisplay = document.getElementById('displaySubtitle');
+            titleDisplay.innerText = state.tourneyName;
+            subDisplay.innerText = state.subtitle;
+            titleDisplay.style.display = 'block';
+            subDisplay.style.display = 'block';
+
+            renderBracket();
+        }
+    }
+    
+    // Load state saat halaman pertama kali dibuka
+    window.addEventListener('DOMContentLoaded', loadTournamentState);
+
+    // ================= ZOOM & PAN LOGIC =================
+    let currentZoom = 1;
+    function zoomBracket(action) {
+        const container = document.getElementById('fullBracketContainer');
+        if (action === 'in' && currentZoom < 2) currentZoom += 0.1;
+        else if (action === 'out' && currentZoom > 0.4) currentZoom -= 0.1;
+        else if (action === 'reset') currentZoom = 1;
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    const panWrapper = document.getElementById('panZoomWrapper');
+    let isDown = false, startX, startY, scrollLeft, scrollTop, isDragging = false;
+
+    panWrapper.addEventListener('mousedown', (e) => {
+        isDown = true; isDragging = false;
+        panWrapper.style.cursor = 'grabbing';
+        startX = e.pageX - panWrapper.offsetLeft;
+        startY = e.pageY - panWrapper.offsetTop;
+        scrollLeft = panWrapper.scrollLeft;
+        scrollTop = panWrapper.scrollTop;
+    });
+    panWrapper.addEventListener('mouseleave', () => { isDown = false; panWrapper.style.cursor = 'grab'; });
+    panWrapper.addEventListener('mouseup', () => { isDown = false; panWrapper.style.cursor = 'grab'; });
+    panWrapper.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - panWrapper.offsetLeft;
+        const y = e.pageY - panWrapper.offsetTop;
+        const walkX = (x - startX) * 1.5; 
+        const walkY = (y - startY) * 1.5; 
+        if (Math.abs(walkX) > 5 || Math.abs(walkY) > 5) isDragging = true;
+        panWrapper.scrollLeft = scrollLeft - walkX;
+        panWrapper.scrollTop = scrollTop - walkY;
+    });
+
+    // ================= TOURNAMENT LOGIC =================
+    function selectFormat(format, element) {
+        document.querySelectorAll('.format-card').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        currentFormat = format;
+        document.getElementById('thirdPlaceRow').style.display = (format === 'round-robin' || format === 'swiss' || format === 'ffa') ? 'none' : 'flex';
+    }
+
+    function initTournament() {
+        const titleInput = document.getElementById('tourneyName').value.trim();
+        const inputArea = document.getElementById('participantsInput');
+        const errorMsg = document.getElementById('errorMsg');
+        
+        config.thirdPlace = (currentFormat === 'single' || currentFormat === 'double') ? document.getElementById('include3rdPlace').checked : false;
+        config.blindDraw = document.getElementById('blindDraw').checked;
+        const isRandomize = document.getElementById('randomizeSeeds').checked;
+        const matchType = document.getElementById('matchType').value;
+        
+        errorMsg.style.display = 'none';
+        let rawParticipants = inputArea.value.split('\n').map(name => name.trim()).filter(name => name !== "");
+
+        if (rawParticipants.length < 3 && config.thirdPlace && currentFormat === 'single') {
+            errorMsg.innerText = "Minimal harus ada 3 peserta jika mengaktifkan Perebutan Juara 3.";
+            errorMsg.style.display = 'block'; return;
+        } else if (rawParticipants.length < 2) {
+            errorMsg.innerText = "Minimal harus ada 2 peserta.";
+            errorMsg.style.display = 'block'; return;
+        }
+
+        document.getElementById('setupCard').style.display = 'none';
+        document.getElementById('guideCard').style.display = 'none'; 
+        document.getElementById('mainHeaderWrapper').style.display = 'none';
+        
+        document.getElementById('actionBarWrapper').style.display = 'block';
+        document.getElementById('panZoomWrapper').style.display = 'block';
+        
+        const titleDisplay = document.getElementById('displayTourneyName');
+        const subDisplay = document.getElementById('displaySubtitle');
+        titleDisplay.innerText = titleInput || "Zizion Tournament";
+        
+        let formatText = "Format Turnamen";
+        if (currentFormat === 'single') formatText = 'Eliminasi Tunggal';
+        else if (currentFormat === 'double') formatText = 'Eliminasi Ganda';
+        else if (currentFormat === 'round-robin') formatText = 'Round Robin';
+        else if (currentFormat === 'swiss') formatText = 'Sistem Swiss';
+        else if (currentFormat === 'ffa') formatText = 'Free-for-all';
+        
+        subDisplay.innerText = `${formatText} • ${matchType}`;
+        titleDisplay.style.display = 'block';
+        subDisplay.style.display = 'block';
+
+        let participants = rawParticipants.map((name, index) => ({ seed: index + 1, name: name }));
+        if (isRandomize) {
+            for (let i = participants.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [participants[i], participants[j]] = [participants[j], participants[i]];
+            }
+        }
+
+        if (currentFormat === 'round-robin') generateRoundRobin(participants);
+        else if (currentFormat === 'swiss') generateSwiss(participants);
+        else if (currentFormat === 'ffa') generateFFA(participants);
+        else generateElimination(participants, currentFormat === 'double');
+        
+        currentZoom = 1; 
+        zoomBracket('reset');
+        saveTournamentState(); // Auto-save
+    }
+
+    function generateRoundRobin(participants) {
+        if (participants.length % 2 !== 0) participants.push({ seed: null, name: "BYE" });
+        const numRounds = participants.length - 1;
+        const halfSize = participants.length / 2;
+        tournamentData = []; matchCounter = 1;
+        
+        let rotPlayers = [...participants];
+
+        for (let r = 0; r < numRounds; r++) {
+            let roundMatches = [];
+            for (let i = 0; i < halfSize; i++) {
+                roundMatches.push({ id: matchCounter++, p1: rotPlayers[i], p2: rotPlayers[rotPlayers.length - 1 - i], winner: null });
+            }
+            tournamentData.push(roundMatches);
+            rotPlayers.splice(1, 0, rotPlayers.pop());
+        }
+
+        tournamentData.forEach(round => {
+            round.forEach(match => {
+                if (match.p1 && match.p1.name === "BYE") match.winner = match.p2;
+                if (match.p2 && match.p2.name === "BYE") match.winner = match.p1;
+            });
+        });
+        renderBracket();
+    }
+
+    function generateSwiss(participants) {
+        if (participants.length % 2 !== 0) participants.push({ seed: null, name: "BYE" });
+        const numRounds = Math.ceil(Math.log2(participants.length)) || 1;
+        tournamentData = []; matchCounter = 1;
+        
+        for (let r = 0; r < numRounds; r++) {
+            let roundMatches = [];
+            for (let i = 0; i < participants.length / 2; i++) {
+                roundMatches.push({ id: matchCounter++, p1: r === 0 ? participants[i*2] : null, p2: r === 0 ? participants[i*2+1] : null, winner: null });
+            }
+            tournamentData.push(roundMatches);
+        }
+        renderBracket();
+    }
+
+    function generateFFA(participants) {
+        tournamentData = []; matchCounter = 1;
+        let roundMatches = [];
+        let groupSize = 4;
+        for (let i = 0; i < participants.length; i += groupSize) {
+            let groupPlayers = participants.slice(i, i + groupSize);
+            roundMatches.push({ id: matchCounter++, players: groupPlayers, winner: null });
+        }
+        tournamentData.push(roundMatches);
+        renderBracket();
+    }
+
+    function generateElimination(participants, isDoubleElim) {
+        let nextPower = 1; while (nextPower < participants.length) nextPower *= 2;
+        while (participants.length < nextPower) participants.push({ seed: null, name: "BYE" });
+
+        totalRounds = Math.log2(nextPower);
+        tournamentData = []; matchCounter = 1; lowerBracketData = [];
+        thirdPlaceMatch = (config.thirdPlace && totalRounds > 1 && !isDoubleElim) ? { id: '3rd', p1: null, p2: null, winner: null } : null;
+
+        let currentRoundMatches = nextPower / 2;
+        for (let r = 0; r < totalRounds; r++) {
+            let roundMatches = [];
+            for (let m = 0; m < currentRoundMatches; m++) {
+                roundMatches.push({ id: matchCounter++, p1: r === 0 ? participants[m * 2] : null, p2: r === 0 ? participants[m * 2 + 1] : null, winner: null });
+            }
+            tournamentData.push(roundMatches);
+            currentRoundMatches /= 2;
+        }
+
+        if (isDoubleElim) {
+            let lbRounds = (totalRounds - 1) * 2;
+            let lbMatchesCount = nextPower / 4;
+            for (let r = 0; r < lbRounds; r++) {
+                let roundMatches = [];
+                for (let m = 0; m < Math.max(1, Math.floor(lbMatchesCount)); m++) {
+                    roundMatches.push({ id: `L${matchCounter++}`, p1: null, p2: null, winner: null });
+                }
+                lowerBracketData.push(roundMatches);
+                if (r % 2 === 1) lbMatchesCount /= 2; 
+            }
+        }
+
+        tournamentData[0].forEach((match, index) => {
+            if (match.p2 && match.p2.name === "BYE") advanceWinner(0, index, match.p1, true, false); 
+            else if (match.p1 && match.p1.name === "BYE") advanceWinner(0, index, match.p2, true, false);
+        });
+        renderBracket();
+    }
+
+    function advanceWinner(roundIndex, matchIndex, winnerObj, isAutoPass = false, isLowerBracket = false) {
+        if (!winnerObj || winnerObj.name === "BYE") return;
+        
+        if (currentFormat === 'ffa') {
+            tournamentData[0][matchIndex].winner = winnerObj;
+            if(!isAutoPass) triggerCelebration(winnerObj.name);
+            saveTournamentState(); renderBracket(); return;
+        }
+        
+        let dataTarget = isLowerBracket ? lowerBracketData : tournamentData;
+        
+        if (roundIndex === '3rd') {
+            thirdPlaceMatch.winner = winnerObj;
+            if(!isAutoPass) triggerCelebration(winnerObj.name);
+            saveTournamentState(); renderBracket(); return;
+        }
+
+        let match = dataTarget[roundIndex][matchIndex];
+        match.winner = winnerObj;
+        let loserObj = (winnerObj === match.p1) ? match.p2 : match.p1;
+
+        if (currentFormat === 'round-robin' || currentFormat === 'swiss') {
+            saveTournamentState(); renderBracket(); return;
+        }
+
+        let nextRoundIndex = roundIndex + 1;
+        
+        if (!isLowerBracket) {
+            if (nextRoundIndex < totalRounds) {
+                let nextMatchIndex = Math.floor(matchIndex / 2);
+                let isFirstPlayer = (matchIndex % 2 === 0);
+
+                if (isFirstPlayer) tournamentData[nextRoundIndex][nextMatchIndex].p1 = winnerObj;
+                else tournamentData[nextRoundIndex][nextMatchIndex].p2 = winnerObj;
+
+                if (config.thirdPlace && nextRoundIndex === totalRounds - 1 && thirdPlaceMatch) {
+                    if (isFirstPlayer) thirdPlaceMatch.p1 = loserObj;
+                    else thirdPlaceMatch.p2 = loserObj;
+                    thirdPlaceMatch.winner = null; 
+                }
+
+                let targetMatch = tournamentData[nextRoundIndex][nextMatchIndex];
+                if (targetMatch.p1 && targetMatch.p1.name === "BYE") advanceWinner(nextRoundIndex, nextMatchIndex, targetMatch.p2, true, false);
+                if (targetMatch.p2 && targetMatch.p2.name === "BYE") advanceWinner(nextRoundIndex, nextMatchIndex, targetMatch.p1, true, false);
+            } 
+            else if (currentFormat === 'single' && !isAutoPass) {
+                triggerCelebration(winnerObj.name);
+            }
+        }
+        saveTournamentState();
+        renderBracket();
+    }
+
+    function submitScore(roundIndex, matchIndex, isLowerBracket = false) {
+        if (currentFormat === 'ffa') {
+            let match = tournamentData[0][matchIndex];
+            let highestScore = -1;
+            let winner = null;
+            
+            match.players.forEach(p => {
+                let score = parseInt(document.getElementById(`score_ffa_m${matchIndex}_p${p.seed}`).value) || 0;
+                if (score > highestScore) { highestScore = score; winner = p; }
+            });
+            
+            if (winner) advanceWinner(roundIndex, matchIndex, winner);
+            return;
+        }
+        
+        let p1Id = '', p2Id = '';
+        if(roundIndex === '3rd') { p1Id = `score_3rd_p1`; p2Id = `score_3rd_p2`; }
+        else {
+            let prefix = isLowerBracket ? 'lb' : 'ub';
+            p1Id = `score_${prefix}_r${roundIndex}_m${matchIndex}_p1`;
+            p2Id = `score_${prefix}_r${roundIndex}_m${matchIndex}_p2`;
+        }
+        
+        const score1 = parseInt(document.getElementById(p1Id).value) || 0;
+        const score2 = parseInt(document.getElementById(p2Id).value) || 0;
+        
+        let match = (roundIndex === '3rd') ? thirdPlaceMatch : (isLowerBracket ? lowerBracketData[roundIndex][matchIndex] : tournamentData[roundIndex][matchIndex]);
+
+        if (score1 > score2) advanceWinner(roundIndex, matchIndex, match.p1, false, isLowerBracket);
+        else if (score2 > score1) advanceWinner(roundIndex, matchIndex, match.p2, false, isLowerBracket);
+        else alert("Skor seri! Mohon berikan selisih poin.");
+    }
+
+    // ================= RENDER UI =================
+    function renderBracket() {
+        const container = document.getElementById('fullBracketContainer');
+        container.innerHTML = '';
+
+        if (currentFormat === 'round-robin' || currentFormat === 'swiss' || currentFormat === 'ffa') {
+            container.innerHTML = '<div class="bracket-section-title">Jadwal Pertandingan</div>';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'bracket-wrapper no-lines';
+            
+            tournamentData.forEach((round, roundIndex) => {
+                const roundDiv = document.createElement('div');
+                roundDiv.className = 'round';
+                
+                let title = (currentFormat === 'ffa') ? `Grup (Penyisihan)` : `Ronde ${roundIndex + 1}`;
+                roundDiv.innerHTML = `<div class="round-title">${title}</div>`;
+                
+                round.forEach((match, matchIndex) => {
+                    const matchContainer = document.createElement('div');
+                    matchContainer.className = 'match-container';
+                    matchContainer.appendChild(createMatchDOM(match, roundIndex, matchIndex, false, false));
+                    roundDiv.appendChild(matchContainer);
+                });
+                wrapper.appendChild(roundDiv);
+            });
+            container.appendChild(wrapper);
+        } else {
+            if (currentFormat === 'double') container.innerHTML += '<div class="bracket-section-title">Upper Bracket</div>';
+            
+            const wrapperUB = document.createElement('div');
+            wrapperUB.className = 'bracket-wrapper draw-lines';
+            buildBracketHTML(wrapperUB, tournamentData, false);
+            container.appendChild(wrapperUB);
+
+            if (currentFormat === 'double' && lowerBracketData.length > 0) {
+                container.innerHTML += '<div class="bracket-section-title">Lower Bracket</div>';
+                const wrapperLB = document.createElement('div');
+                wrapperLB.className = 'bracket-wrapper draw-lines';
+                buildBracketHTML(wrapperLB, lowerBracketData, true);
+                container.appendChild(wrapperLB);
+            }
+        }
+    }
+
+    function buildBracketHTML(wrapper, dataSet, isLowerBracket) {
+        let roundsCount = dataSet.length;
+        
+        dataSet.forEach((round, roundIndex) => {
+            const roundDiv = document.createElement('div');
+            roundDiv.className = 'round';
+
+            let rTitle = `Ronde ${roundIndex + 1}`;
+            if (!isLowerBracket) {
+                if (roundIndex === roundsCount - 1) rTitle = currentFormat === 'double' ? "Final Upper Bracket" : "Grand Final";
+                else if (roundIndex === roundsCount - 2) rTitle = "Semifinal";
+                else if (roundIndex === roundsCount - 3) rTitle = "Perempat Final";
+            } else {
+                if (roundIndex === roundsCount - 1) rTitle = "Final Lower Bracket";
+            }
+
+            roundDiv.innerHTML = `<div class="round-title">${rTitle}</div>`;
+
+            round.forEach((match, matchIndex) => {
+                const matchContainer = document.createElement('div');
+                matchContainer.className = 'match-container';
+                matchContainer.appendChild(createMatchDOM(match, roundIndex, matchIndex, false, isLowerBracket));
+                
+                if (!isLowerBracket && roundIndex === roundsCount - 1 && config.thirdPlace && thirdPlaceMatch) {
+                    const thirdContainer = document.createElement('div');
+                    thirdContainer.className = 'third-place-wrapper';
+                    thirdContainer.innerHTML = `<div class="round-title" style="background:var(--bronze-bg); border-color:var(--bronze-border);">Bronze Match (Juara 3)</div>`;
+                    thirdContainer.appendChild(createMatchDOM(thirdPlaceMatch, '3rd', 0, true, false));
+                    matchContainer.appendChild(thirdContainer);
+                }
+                roundDiv.appendChild(matchContainer);
+            });
+            wrapper.appendChild(roundDiv);
+        });
+    }
+
+    function createMatchDOM(match, roundIndex, matchIndex, isBronze = false, isLowerBracket = false) {
+        const matchBox = document.createElement('div');
+        matchBox.className = `match-box ${isBronze ? 'third-place-box' : ''}`;
+        
+        const matchIdLabel = document.createElement('div');
+        matchIdLabel.className = 'match-id';
+        matchIdLabel.innerText = isBronze ? `M-3rd` : `M${match.id}`;
+        matchBox.appendChild(matchIdLabel);
+
+        const createPlayerRow = (playerData, isP1) => {
+            const row = document.createElement('div');
+            const isWinner = match.winner && playerData && match.winner.seed === playerData.seed;
+            row.className = `player-row ${isWinner ? 'winner' : ''}`;
+            
+            if (playerData) {
+                const isBye = playerData.name === 'BYE';
+                let scoreHtml = '';
+                
+                let isMatchPlayable = false;
+                if (currentFormat === 'ffa') {
+                    isMatchPlayable = !match.winner && !isBye;
+                } else {
+                    isMatchPlayable = match.p1 && match.p2 && match.p1.name !== 'BYE' && match.p2.name !== 'BYE' && !match.winner;
+                }
+                
+                if (isMatchPlayable) {
+                    let sId = '';
+                    if (currentFormat === 'ffa') {
+                        sId = `score_ffa_m${matchIndex}_p${playerData.seed}`;
+                    } else if (roundIndex === '3rd') {
+                        sId = `score_3rd_${isP1 ? 'p1' : 'p2'}`;
+                    } else {
+                        sId = `score_${isLowerBracket ? 'lb' : 'ub'}_r${roundIndex}_m${matchIndex}_${isP1 ? 'p1' : 'p2'}`;
+                    }
+                    scoreHtml = `<input type="number" id="${sId}" class="score-input" placeholder="0" min="0" onmousedown="event.stopPropagation()">`;
+                }
+
+                const seedText = (config.blindDraw || !playerData.seed) ? '' : playerData.seed;
+                row.innerHTML = `<span class="seed-num">${seedText}</span><span class="player-name ${isBye ? 'bye' : ''}">${playerData.name}</span>${scoreHtml}`;
+                
+                row.onclick = (e) => {
+                    if (isDragging) return; // Mencegah klik saat melakukan drag (Pan)
+                    if (!isBye && e.target.tagName !== 'INPUT') advanceWinner(roundIndex, matchIndex, playerData, false, isLowerBracket);
+                };
+            } else {
+                row.innerHTML = `<span class="seed-num"></span><span class="player-name" style="color: var(--text-muted);">Menunggu...</span>`;
+            }
+            return row;
+        };
+
+        if (currentFormat === 'ffa') {
+            match.players.forEach(p => matchBox.appendChild(createPlayerRow(p, false)));
+        } else {
+            matchBox.appendChild(createPlayerRow(match.p1, true));
+            matchBox.appendChild(createPlayerRow(match.p2, false));
+        }
+        
+        let hasPlayableMatch = false;
+        if (currentFormat === 'ffa') hasPlayableMatch = !match.winner;
+        else hasPlayableMatch = match.p1 && match.p2 && match.p1.name !== 'BYE' && match.p2.name !== 'BYE' && !match.winner;
+
+        if (hasPlayableMatch) {
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'submit-score-btn'; submitBtn.innerHTML = '✓';
+            if (isBronze) submitBtn.style.background = 'var(--bronze-border)';
+            submitBtn.onclick = (e) => { 
+                e.stopPropagation(); 
+                if(!isDragging) submitScore(roundIndex, matchIndex, isLowerBracket); 
+            };
+            matchBox.appendChild(submitBtn);
+        }
+        return matchBox;
+    }
+
+    function triggerCelebration(winnerName) {
+        document.getElementById('winnerText').innerText = winnerName;
+        document.getElementById('celebrationModal').style.display = 'flex';
+        
+        const cheerAudio = new Audio('https://actions.google.com/sounds/v1/crowds/stadium_cheer.ogg');
+        cheerAudio.volume = 0.7; cheerAudio.play().catch(e => console.log(e));
+        
+        const duration = 12 * 1000; 
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 45, spread: 360, ticks: 100, zIndex: 10000 };
+
+        confetti({ particleCount: 200, spread: 120, origin: { y: 0.6 }, zIndex: 10000, colors: ['#d4af37', '#fcf6ba', '#ffffff', '#82d0c8'] });
+
+        fireworksInterval = setInterval(function() {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(fireworksInterval);
+            const particleCount = 60 * (timeLeft / duration);
+            
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * (0.3 - 0.1) + 0.1, y: Math.random() - 0.2 }, colors: ['#d4af37', '#ffffff'] }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * (0.9 - 0.7) + 0.7, y: Math.random() - 0.2 }, colors: ['#d4af37', '#82d0c8'] }));
+        }, 300);
+    }
+
+    function closeCelebrationAndReset() {
+        document.getElementById('celebrationModal').style.display = 'none';
+        clearInterval(fireworksInterval);
+    }
+
+    function forceReset() {
+        if(confirm("Anda yakin ingin mereset format turnamen ini? Semua data progress akan dihapus.")) {
+            localStorage.removeItem('zizion_saved_tournament'); // Hapus data auto-save
+            
+            document.getElementById('setupCard').style.display = 'block';
+            document.getElementById('guideCard').style.display = 'block'; 
+            document.getElementById('mainHeaderWrapper').style.display = 'flex';
+            
+            document.getElementById('actionBarWrapper').style.display = 'none';
+            document.getElementById('panZoomWrapper').style.display = 'none';
+            document.getElementById('displayTourneyName').style.display = 'none';
+            document.getElementById('displaySubtitle').style.display = 'none';
+            
+            document.getElementById('fullBracketContainer').innerHTML = '';
+            document.getElementById('tourneyName').value = '';
+        }
+    }
+</script>
+</body>
+</html>
