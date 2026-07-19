@@ -3,335 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zizion Tournament Bracket Generator</title>
+    <title>Zizion Tournament Bracket Generator Pro</title>
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         :root {
-            /* Tema Default (Zizion Light) */
-            --bg-main: #FFFFF0; 
-            --bg-card: #FFFFFF;
-            --bg-input: #F8FBFB;
-            --accent: #82d0c8;
-            --accent-hover: #6cbab2;
-            --text-main: #2c4c46; 
-            --text-muted: #6b9e95;
-            --border-color: #a3d9d2;
-            --line-color: #82d0c8;
-            --match-bg: #FFFFFF;
-            --winner-bg: #E6F7F5;
-            --bronze-bg: #FCF8F2; 
-            --bronze-border: #d4af37;
+            /* TEMA DEFAULT: ZIZION LIGHT (Pastel Modern) */
+            --bg-main: #f0f7f6; 
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-input: #ffffff;
+            --accent: #1abc9c;
+            --accent-hover: #16a085;
+            --accent-glow: rgba(26, 188, 156, 0.3);
+            --text-main: #1e272e; 
+            --text-muted: #7f8c8d;
+            --border-color: #d1e5e3;
+            --line-color: #1abc9c;
+            --match-bg: #ffffff;
+            --winner-bg: #e8f8f5;
+            --bronze-bg: #fef9e7; 
+            --bronze-border: #f1c40f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
-        /* --- TEMA: ESPORTS DARK MODE --- */
+        /* --- TEMA: ESPORTS CYBER DARK --- */
         body.theme-esports {
-            --bg-main: #121212; 
-            --bg-card: #1E1E1E;
-            --bg-input: #2A2A2A;
-            --accent: #00ffff;
-            --accent-hover: #9d00ff;
+            --bg-main: #0a0e17; 
+            --bg-card: rgba(18, 24, 38, 0.85);
+            --bg-input: #171f30;
+            --accent: #00f2fe;
+            --accent-hover: #4facfe;
+            --accent-glow: rgba(0, 242, 254, 0.3);
             --text-main: #ffffff; 
-            --text-muted: #888888;
-            --border-color: #333333;
-            --line-color: #00ffff;
-            --match-bg: #1a1a1a;
-            --winner-bg: rgba(0, 255, 255, 0.1);
-            --bronze-bg: #1e1505; 
-            --bronze-border: #d4af37;
-            background-image: none;
+            --text-muted: #8c9ba5;
+            --border-color: #26334d;
+            --line-color: #00f2fe;
+            --match-bg: #141b2d;
+            --winner-bg: rgba(0, 242, 254, 0.15);
+            --bronze-bg: #1f1a0c; 
+            --bronze-border: #f39c12;
+            --shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
         }
 
         /* --- TEMA: DYNAMIC SPORTS --- */
         body.theme-sports {
-            --bg-main: #0B2545; 
-            --bg-card: #133A6B;
-            --bg-input: #0D2D54;
-            --accent: #FF6B35;
-            --accent-hover: #ff8559;
+            --bg-main: #0b1d3a; 
+            --bg-card: rgba(16, 37, 70, 0.85);
+            --bg-input: #15315d;
+            --accent: #ff5e62;
+            --accent-hover: #ff383f;
+            --accent-glow: rgba(255, 94, 98, 0.3);
             --text-main: #ffffff; 
-            --text-muted: #b0c4de;
-            --border-color: #245A96;
-            --line-color: #FF6B35;
-            --match-bg: #103059;
-            --winner-bg: rgba(255, 107, 53, 0.15);
-            --bronze-bg: #4a2e0a; 
-            --bronze-border: #fca311;
-            background-image: none;
+            --text-muted: #a0b2d1;
+            --border-color: #224880;
+            --line-color: #ff5e62;
+            --match-bg: #122a52;
+            --winner-bg: rgba(255, 94, 98, 0.15);
+            --bronze-bg: #33200b; 
+            --bronze-border: #e67e22;
+            --shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
         }
 
         /* --- TEMA: MINIMALIST PRO --- */
         body.theme-minimalist {
-            --bg-main: #f5f5f5; 
-            --bg-card: #ffffff;
-            --bg-input: #fafafa;
-            --accent: #000000;
-            --accent-hover: #333333;
-            --text-main: #000000; 
-            --text-muted: #666666;
-            --border-color: #e0e0e0;
-            --line-color: #000000;
+            --bg-main: #f8f9fa; 
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-input: #f1f3f5;
+            --accent: #212529;
+            --accent-hover: #000000;
+            --accent-glow: rgba(33, 37, 41, 0.15);
+            --text-main: #212529; 
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --line-color: #495057;
             --match-bg: #ffffff;
-            --winner-bg: #f0f0f0;
-            --bronze-bg: #fafafa; 
-            --bronze-border: #555555;
-            background-image: none;
+            --winner-bg: #e9ecef;
+            --bronze-bg: #fdfdfd; 
+            --bronze-border: #495057;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-main);
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(130, 208, 200, 0.15), transparent 30%),
-                radial-gradient(circle at 85% 20%, rgba(130, 208, 200, 0.15), transparent 30%);
+                radial-gradient(circle at 10% 20%, var(--accent-glow), transparent 35%),
+                radial-gradient(circle at 90% 80%, var(--accent-glow), transparent 35%);
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+            padding: 30px 20px;
             min-height: 100vh;
-            transition: background-color 0.4s, color 0.4s;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* --- THEME SWITCHER MENU --- */
-        .theme-switcher-wrapper {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
+        /* --- FLOATING THEME BUTTON --- */
+        .theme-toggle-fab {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-main);
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, background-color 0.3s;
+            touch-action: none;
+        }
+        .theme-toggle-fab:hover {
+            transform: scale(1.1);
+            border-color: var(--accent);
+        }
+
+        /* --- THEME SWITCHER WIDGET --- */
+        .theme-switcher-wrapper {
+            position: fixed;
+            top: 90px;
+            left: 25px;
+            z-index: 999;
+            display: none;
+            flex-direction: column;
             background: var(--bg-card);
-            padding: 10px 15px;
-            border-radius: 12px;
+            border-radius: 18px;
             border: 2px solid var(--border-color);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
+            width: 260px;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            user-select: none;
+            animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .theme-switcher-wrapper label { margin: 0; font-size: 12px; }
-        .theme-switcher-wrapper select { padding: 6px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .theme-switcher-header {
+            background: var(--bg-input);
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+        }
+        .theme-switcher-header:active { cursor: grabbing; }
+        .close-switcher-btn {
+            background: none; border: none; color: var(--text-muted); font-size: 20px;
+            cursor: pointer; padding: 0; line-height: 1; transition: 0.2s;
+        }
+        .close-switcher-btn:hover { color: #e74c3c; transform: scale(1.1); }
 
-        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+        .theme-switcher-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .theme-switcher-body label { margin: 0; font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; }
+        
+        /* Tema Button Interaktif Baru */
+        .theme-btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .theme-btn {
+            background: var(--bg-input); color: var(--text-main); border: 2px solid var(--border-color);
+            padding: 12px 14px; border-radius: 12px; font-weight: 700; cursor: pointer; 
+            text-align: left; transition: all 0.2s; font-size: 13px; display: flex; align-items: center; gap: 8px;
+        }
+        .theme-btn::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); display: inline-block; transition: 0.2s; }
+        .theme-btn:hover { border-color: var(--accent); transform: translateX(5px); }
+        .theme-btn.active-theme { background: var(--winner-bg); color: var(--accent); border-color: var(--accent); }
+        .theme-btn.active-theme::before { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
+        .container { max-width: 1500px; margin: 0 auto; position: relative; z-index: 2; }
+
+        /* --- HEADER --- */
+        .header-wrapper { display: flex; justify-content: center; margin-bottom: 30px; }
         .header {
-            text-align: center; margin-bottom: 40px; background: rgba(255, 255, 255, 0.9);
-            padding: 20px 40px; border-radius: 20px; display: inline-block;
-            border: 2px solid var(--border-color); box-shadow: 0 10px 30px rgba(130, 208, 200, 0.15);
-            backdrop-filter: blur(5px);
+            text-align: center; background: var(--bg-card); padding: 25px 50px;
+            border-radius: 24px; display: inline-block; border: 2px solid var(--border-color);
+            box-shadow: var(--shadow); backdrop-filter: blur(10px);
         }
-        body.theme-esports .header, body.theme-sports .header, body.theme-minimalist .header {
-            background: var(--bg-card);
-        }
-        .header-wrapper { display: flex; justify-content: center; margin-top: 20px; }
-        .header h1 { margin: 0; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
+        .header h1 { margin: 0; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; background: linear-gradient(135deg, var(--text-main), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* --- UI SETUP CARD --- */
+        /* --- SETUP CARD --- */
         .setup-card {
-            background-color: var(--bg-card); border: 2px solid var(--border-color);
-            border-radius: 24px; padding: 40px; max-width: 750px; margin: 0 auto 40px auto;
-            box-shadow: 0 15px 35px rgba(0,0,0, 0.08);
-            transition: all 0.3s;
+            background: var(--bg-card); border: 2px solid var(--border-color);
+            border-radius: 28px; padding: 40px; max-width: 800px; margin: 0 auto 40px auto;
+            box-shadow: var(--shadow); backdrop-filter: blur(12px); transition: 0.3s;
         }
 
-        .section-title { font-size: 18px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .section-title { font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; color: var(--accent); }
         
         .input-group { margin-bottom: 25px; }
-        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         input[type="text"], textarea, select {
-            width: 100%; background-color: var(--bg-input); border: 2px solid var(--border-color);
-            border-radius: 12px; color: var(--text-main); padding: 14px; font-size: 15px;
-            box-sizing: border-box; outline: none; transition: all 0.3s; font-family: inherit; font-weight: 600;
+            width: 100%; background: var(--bg-input); border: 2px solid var(--border-color);
+            border-radius: 14px; color: var(--text-main); padding: 14px 18px; font-size: 15px;
+            outline: none; transition: 0.2s; font-family: inherit; font-weight: 600;
         }
-        textarea { height: 120px; resize: vertical; }
-        input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(130, 208, 200, 0.3); }
+        textarea { height: 140px; resize: vertical; line-height: 1.5; }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
 
-        /* --- FORMAT CARDS UPDATE --- */
-        .format-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        /* --- FORMAT CARDS --- */
+        .format-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 35px; }
         .format-card {
-            background: var(--bg-input); border: 2px solid var(--border-color); border-radius: 16px;
-            padding: 15px; cursor: pointer; transition: all 0.2s; position: relative;
+            background: var(--bg-input); border: 2px solid var(--border-color); border-radius: 18px;
+            padding: 18px; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
         }
-        .format-card.active { background: var(--accent); border-color: var(--text-main); color: var(--bg-main); transform: scale(1.02); }
-        .format-card.active .format-desc { color: inherit; opacity: 0.9; }
-        .format-card:hover:not(.active) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0, 0.1); }
+        .format-card.active {
+            background: var(--accent); border-color: var(--accent); color: #fff;
+            transform: translateY(-4px); box-shadow: 0 12px 25px var(--accent-glow);
+        }
+        .format-card.active .format-desc { color: rgba(255,255,255, 0.9); }
+        .format-card:hover:not(.active) { transform: translateY(-3px); border-color: var(--accent); }
         
-        .format-title { font-size: 16px; font-weight: 800; margin-bottom: 5px; }
+        .format-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
         .format-desc { font-size: 12px; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
 
-        /* --- TOGGLE SWITCH --- */
-        .settings-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; background: var(--bg-input); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); }
+        /* --- TOGGLE SWITCHES --- */
+        .settings-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 35px; background: var(--bg-input); padding: 24px; border-radius: 20px; border: 1px solid var(--border-color); }
         .toggle-row { display: flex; align-items: center; justify-content: space-between; }
         .toggle-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
         
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch { position: relative; display: inline-block; width: 52px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--text-muted); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(24px); }
 
         button.btn-primary {
-            background-color: var(--text-main); color: var(--bg-main); border: none; padding: 18px 20px;
+            background: var(--accent); color: #fff; border: none; padding: 18px 24px;
             font-size: 16px; font-weight: 800; border-radius: 16px; cursor: pointer; width: 100%;
-            text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s;
+            text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+            box-shadow: 0 10px 25px var(--accent-glow);
         }
-        button.btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0, 0.2); }
+        button.btn-primary:hover { background: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 15px 30px var(--accent-glow); }
 
-        .error-msg { background: #fbe6e9; color: #d16d7a; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none; font-weight: 600; border-left: 5px solid #d16d7a; }
+        .error-msg { background: rgba(231, 76, 60, 0.1); color: #e74c3c; padding: 16px; border-radius: 14px; margin-bottom: 25px; display: none; font-weight: 700; border-left: 5px solid #e74c3c; font-size: 14px; }
 
-        /* --- BRACKET DISPLAY --- */
-        .title-wrapper { display: flex; justify-content: center; flex-direction: column; align-items: center; }
-        .tournament-title-display { font-size: 2rem; margin-bottom: 5px; display: none; text-transform: uppercase; font-weight: 900; background: var(--bg-card); padding: 10px 30px; border-radius: 16px; border: 2px solid var(--border-color); }
-        .tournament-subtitle { display: none; font-size: 1rem; font-weight: 700; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        /* --- TOURNAMENT DISPLAY & ACTION BAR --- */
+        .title-wrapper { display: flex; justify-content: center; flex-direction: column; align-items: center; text-align: center; }
+        .tournament-title-display { font-size: 2.2rem; margin-bottom: 8px; display: none; text-transform: uppercase; font-weight: 900; background: var(--bg-card); padding: 12px 35px; border-radius: 20px; border: 2px solid var(--border-color); box-shadow: var(--shadow); backdrop-filter: blur(10px); }
+        .tournament-subtitle { display: none; font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
 
         /* STICKY ACTION BAR */
         .action-bar-wrapper {
-            position: sticky;
-            top: 20px;
-            z-index: 100;
-            display: none; /* diubah menjadi flex via JS */
-            margin-bottom: 20px;
+            position: sticky; top: 20px; z-index: 100; display: none; margin-bottom: 25px;
         }
-        
         .action-bar { 
             width: 100%; display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 30px; background: var(--bg-card); border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 2px solid var(--border-color); 
+            padding: 14px 25px; background: var(--bg-card); border-radius: 20px; 
+            box-shadow: var(--shadow); border: 2px solid var(--border-color); backdrop-filter: blur(15px);
+            flex-wrap: wrap; gap: 15px;
         }
+        .action-bar-left { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         
-        .action-bar-left { display: flex; align-items: center; gap: 20px; }
-        .zoom-controls { display: flex; gap: 5px; background: var(--bg-input); padding: 5px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .zoom-controls button { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-weight: bold; color: var(--text-main); display:flex; align-items:center; justify-content:center; transition: 0.2s;}
+        .zoom-controls { display: flex; gap: 6px; background: var(--bg-input); padding: 6px; border-radius: 14px; border: 1px solid var(--border-color); }
+        .zoom-controls button { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; width: 36px; height: 36px; cursor: pointer; font-weight: bold; color: var(--text-main); display:flex; align-items:center; justify-content:center; transition: 0.2s; font-size: 16px;}
         .zoom-controls button:hover { background: var(--accent); color: white; border-color: var(--accent); }
         
-        .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 2px solid var(--border-color); padding: 10px 20px; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.2s; }
-        .btn-secondary:hover { background: #d16d7a; color: white; border-color: #d16d7a; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 2px solid var(--border-color); padding: 10px 18px; font-weight: 700; font-size: 13px; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-danger { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 2px solid rgba(231, 76, 60, 0.3); padding: 10px 18px; font-weight: 700; font-size: 13px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .btn-danger:hover { background: #e74c3c; color: white; border-color: #e74c3c; }
 
-        .bracket-section-title { font-size: 1.5rem; font-weight: 900; margin-top: 40px; margin-left: 20px; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
+        .bracket-section-title { font-size: 1.4rem; font-weight: 900; margin-top: 40px; margin-bottom: 20px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; text-align: center; width: 100%; }
         
-        /* ZOOM & PAN WRAPPER */
+        /* --- ZOOM & PAN WRAPPER --- */
         .pan-zoom-wrapper {
             width: 100%;
             overflow: auto;
             cursor: grab;
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 40px;
             box-sizing: border-box;
-            background: rgba(0,0,0,0.02);
-            border: 1px dashed var(--border-color);
-            min-height: 500px;
-            display: none; /* flex via js */
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            min-height: 650px;
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.02);
+            position: relative;
         }
         .pan-zoom-wrapper:active { cursor: grabbing; }
 
-        /* Container dalam yang akan di-zoom */
         #fullBracketContainer {
-            transform-origin: top left;
-            transition: transform 0.2s ease;
-            width: max-content;
-            padding-right: 50px;
+            transform-origin: center center;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: auto; 
+            min-width: max-content; 
+            padding: 20px;
         }
 
-        .bracket-wrapper { display: flex; gap: 60px; padding: 20px 0; align-items: center; min-height: 400px; padding-bottom: 60px; }
-        .round { display: flex; flex-direction: column; justify-content: space-around; height: 100%; min-width: 290px; position: relative; }
-        .round-title { text-align: center; font-weight: 800; margin-bottom: 30px; text-transform: uppercase; font-size: 14px; letter-spacing: 2px; background: var(--bg-card); padding: 10px; border-radius: 12px; border: 2px solid var(--border-color); }
+        .bracket-wrapper { display: flex; gap: 70px; padding: 20px 0; align-items: center; justify-content: center; min-height: 400px; }
+        .round { display: flex; flex-direction: column; justify-content: space-around; height: 100%; min-width: 290px; position: relative; gap: 30px; }
+        .round-title { text-align: center; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; font-size: 13px; letter-spacing: 2px; background: var(--bg-input); color: var(--accent); padding: 12px; border-radius: 14px; border: 2px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         
-        .match-container { display: flex; align-items: center; position: relative; padding: 20px 0; flex: 1; }
-        .match-box { background-color: var(--match-bg); border: 2px solid var(--border-color); border-radius: 16px; width: 100%; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); position: relative; z-index: 2; transition: 0.2s; }
-        .match-box:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15); }
+        .match-container { display: flex; align-items: center; position: relative; flex: 1; padding: 10px 0; }
         
-        .match-id { position: absolute; top: -12px; left: 15px; background: var(--text-main); color: var(--bg-main); font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 800; z-index: 3;}
+        /* --- MATCH BOX DESIGNS --- */
+        .match-box {
+            background: var(--match-bg); border: 2px solid var(--border-color); border-radius: 18px; width: 100%;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06); position: relative; z-index: 2; transition: all 0.2s;
+            text-align: left; overflow: hidden;
+        }
+        .match-box:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 28px var(--accent-glow); }
+        .match-box.finished { border-color: var(--accent); }
         
-        .player-row { display: flex; align-items: center; padding: 15px 20px; font-size: 15px; border-bottom: 2px solid var(--bg-input); cursor: pointer; min-height: 24px; position: relative; z-index: 2;}
-        .player-row:first-child { border-radius: 14px 14px 0 0; }
-        .player-row:last-child { border-bottom: none; border-radius: 0 0 14px 14px; }
-        .player-row:hover { background-color: var(--winner-bg); }
+        .match-id { position: absolute; top: -11px; left: 16px; background: var(--bg-input); border: 1.5px solid var(--border-color); color: var(--text-muted); font-size: 10px; padding: 2px 10px; border-radius: 20px; font-weight: 800; z-index: 3; letter-spacing: 0.5px;}
         
-        .seed-num { color: var(--text-muted); font-size: 12px; width: 24px; font-weight: 800; }
-        .player-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; font-weight: 600; }
-        .player-name.bye { color: var(--text-muted); font-style: italic; font-weight: 400; }
-        .winner { font-weight: 800; background-color: var(--winner-bg); }
+        .player-row { display: flex; align-items: center; padding: 14px 18px; font-size: 14px; border-bottom: 1.5px solid var(--border-color); cursor: pointer; position: relative; z-index: 2; transition: 0.15s; }
+        .player-row:last-child { border-bottom: none; }
+        .player-row:hover:not(.empty) { background-color: var(--winner-bg); }
         
-        .score-input { width: 45px; padding: 6px; text-align: center; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-input); font-weight: bold; margin-left: 10px; font-size: 14px; position: relative; z-index: 10; color: var(--text-main); }
-        .score-input:focus { border-color: var(--accent); background: var(--bg-card); }
+        .seed-num { color: var(--text-muted); font-size: 11px; width: 26px; font-weight: 800; }
+        .player-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; font-weight: 700; }
+        .player-name.bye { color: var(--text-muted); font-style: italic; font-weight: 500; }
+        .winner { font-weight: 800; background-color: var(--winner-bg); color: var(--accent); }
+        .winner .player-name::after { content: ' ★'; font-size: 12px; }
+        
+        .score-input { width: 46px; padding: 6px; text-align: center; border: 2px solid var(--border-color); border-radius: 10px; background: var(--bg-input); font-weight: 800; margin-left: 10px; font-size: 13px; color: var(--text-main); transition: 0.2s;}
+        .score-input:focus { border-color: var(--accent); background: var(--bg-card); outline: none; box-shadow: 0 0 8px var(--accent-glow); }
         .score-input::-webkit-outer-spin-button, .score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .submit-score-btn { position: absolute; right: -18px; top: 50%; transform: translateY(-50%); background: var(--accent); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
-        .submit-score-btn:hover { background: var(--accent-hover); transform: translateY(-50%) scale(1.1); }
+        .submit-score-btn { position: absolute; right: -18px; top: 50%; transform: translateY(-50%); background: var(--accent); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 4px 10px var(--accent-glow); font-size: 16px;}
+        .submit-score-btn:hover { background: var(--accent-hover); transform: translateY(-50%) scale(1.15); }
 
-        /* GARIS KONEKTOR KHUSUS ELIMINASI */
+        /* --- CONNECTOR LINES --- */
         .bracket-wrapper.draw-lines .match-container::after { content: ""; position: absolute; border-color: var(--line-color); border-style: solid; border-width: 0; z-index: 1; }
-        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container::after { border-right-width: 3px; top: 50%; right: -30px; width: 30px; }
-        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container:nth-child(odd)::after { height: 50%; border-top-width: 3px; border-top-right-radius: 12px; }
-        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container:nth-child(even)::after { height: 50%; bottom: 50%; top: auto; border-bottom-width: 3px; border-bottom-right-radius: 12px; }
-        .bracket-wrapper.draw-lines .round:not(:first-child) .match-container::before { content: ""; position: absolute; left: -30px; top: 50%; width: 30px; border-top: 3px solid var(--line-color); z-index: 1; }
+        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container::after { border-right-width: 2.5px; top: 50%; right: -35px; width: 35px; }
+        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container:nth-child(odd):after { height: 50%; border-top-width: 2.5px; border-top-right-radius: 14px; }
+        .bracket-wrapper.draw-lines .round:not(:last-child) .match-container:nth-child(even):after { height: 50%; bottom: 50%; top: auto; border-bottom-width: 2.5px; border-bottom-right-radius: 14px; }
+        .bracket-wrapper.draw-lines .round:not(:first-child) .match-container::before { content: ""; position: absolute; left: -35px; top: 50%; width: 35px; border-top: 2.5px solid var(--line-color); z-index: 1; }
 
-        /* MODE TANPA GARIS */
-        .bracket-wrapper.no-lines { flex-wrap: wrap; gap: 30px; justify-content: flex-start; padding-bottom: 50px; align-items: flex-start; }
-        .bracket-wrapper.no-lines .round { min-width: 300px; flex: 0 0 auto; margin-bottom: 20px; }
+        .bracket-wrapper.no-lines { flex-wrap: wrap; gap: 30px; justify-content: center; align-items: flex-start; }
+        .bracket-wrapper.no-lines .round { min-width: 310px; flex: 0 0 auto; margin-bottom: 20px; }
 
-        /* --- 3RD PLACE MATCH --- */
-        .third-place-wrapper { position: absolute; bottom: -120px; right: 0; width: 290px; }
+        .third-place-wrapper { position: absolute; bottom: -140px; right: 0; width: 290px; }
         .third-place-box { background: var(--bronze-bg); border-color: var(--bronze-border); }
-        .third-place-box .match-id { background: var(--bronze-border); color: #fff; }
+        .third-place-box .match-id { background: var(--bronze-border); color: #fff; border-color: var(--bronze-border); }
 
-        /* --- ANIMASI JUARA --- */
+        /* --- CELEBRATION MODAL MODIFIED DENGAN EFEK 3D --- */
         .celebration-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(10, 20, 18, 0.95);
-            z-index: 9999; justify-content: center; align-items: center; flex-direction: column; 
-            backdrop-filter: blur(8px); 
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%); 
+            z-index: 9999; justify-content: center; align-items: center; 
+            flex-direction: column; backdrop-filter: blur(15px); animation: fadeIn 0.3s;
         }
         .celebration-card { 
-            background: linear-gradient(145deg, #1f2b29, #131b19);
-            padding: 60px 80px; border-radius: 30px; text-align: center; 
-            border: 2px solid #5a4b1c; 
-            box-shadow: 0 0 60px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(0,0,0,0.5);
-            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
-            color: #fff; position: relative;
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-input));
+            padding: 50px 70px; border-radius: 32px; text-align: center; 
+            border: 2px solid var(--bronze-border); 
+            box-shadow: 0 0 60px rgba(241, 196, 15, 0.4), inset 0 0 20px rgba(241, 196, 15, 0.1);
+            animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            color: var(--text-main); position: relative; max-width: 90%;
         }
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
-        .trophy-icon { font-size: 80px; margin-bottom: 10px; animation: floatTrophy 3s ease-in-out infinite, glowTrophy 2s alternate infinite; filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
-        @keyframes floatTrophy { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes glowTrophy { from { filter: drop-shadow(0 0 10px #d4af37); } to { filter: drop-shadow(0 0 35px #fcf6ba); } }
+        .trophy-icon { font-size: 85px; margin-bottom: 15px; filter: drop-shadow(0 10px 15px rgba(241, 196, 15, 0.6)); animation: floatPulseTrophy 2s ease-in-out infinite alternate; }
+        @keyframes floatPulseTrophy { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-15px) scale(1.05); } }
         
-        .celebration-card h2 { font-size: 1.5rem; color: #d4af37; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; }
+        .celebration-card h2 { font-size: 1.4rem; color: var(--bronze-border); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; }
+        
+        /* Font 3D Style Baru Berwarna Emas */
         .winner-name-display { 
             font-size: 4.5rem; font-weight: 900; margin: 15px 0; 
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase; text-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+            color: #fce883; /* Base light gold */
+            text-shadow: 
+                0 1px 0 #d4af37,
+                0 2px 0 #cca32d,
+                0 3px 0 #c29723,
+                0 4px 0 #b88a19,
+                0 5px 0 #ad7e0f,
+                0 6px 0 #a37205,
+                0 7px 0 #996500,
+                0 8px 1px rgba(0,0,0,0.4),
+                0 0 10px rgba(0,0,0,0.3),
+                0 15px 25px rgba(0,0,0,0.5);
+            font-family: 'Arial Black', 'Impact', sans-serif;
+            text-transform: uppercase; 
+            letter-spacing: 3px;
+            animation: pulse3d 2s infinite alternate;
         }
-        .btn-restart { 
-            background: linear-gradient(90deg, #d4af37, #b38728); color: #131b19; border: none; 
-            padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 16px; 
-            cursor: pointer; margin-top: 30px; text-transform: uppercase; letter-spacing: 2px;
-            transition: all 0.3s; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        @keyframes pulse3d {
+            0% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(1.05); filter: brightness(1.2); }
         }
-        .btn-restart:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); }
 
-        /* --- PANDUAN PENGGUNAAN --- */
+        .btn-restart { 
+            background: linear-gradient(135deg, #f1c40f, #f39c12); color: #000; border: none; 
+            padding: 16px 40px; font-size: 1.1rem; font-weight: 900; border-radius: 16px; 
+            cursor: pointer; margin-top: 25px; text-transform: uppercase; letter-spacing: 2px;
+            transition: all 0.3s; box-shadow: 0 10px 25px rgba(241, 196, 15, 0.3);
+        }
+        .btn-restart:hover { transform: scale(1.05); box-shadow: 0 15px 35px rgba(241, 196, 15, 0.5); }
+
+        /* --- KEYBOARD KUSTOM --- */
+        .custom-keyboard {
+            position: fixed; bottom: -400px; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 500px;
+            background: var(--bg-card); border: 2px solid var(--border-color); border-bottom: none;
+            border-radius: 24px 24px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+            transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10000; padding: 20px; backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .custom-keyboard.show { bottom: 0; }
+        
+        .keyboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .keyboard-header span { font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .close-kb-btn { background: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .close-kb-btn:hover { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+
+        .keyboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .key-btn { background: var(--bg-input); color: var(--text-main); border: 2px solid var(--border-color); border-radius: 14px; padding: 16px; font-size: 22px; font-weight: 900; cursor: pointer; transition: all 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .key-btn:active { background: var(--accent); color: #fff; transform: scale(0.95); border-color: var(--accent); }
+        .key-btn.action-key { font-size: 20px; background: var(--bg-card); }
+        .key-btn.submit-key { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 5px 15px var(--accent-glow); }
+
+        /* --- GUIDE SECTION --- */
         .guide-section { margin-top: 60px; }
-        .guide-section h3 { font-size: 16px; color: var(--text-main); margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; }
-        .guide-section h4 { font-size: 15px; color: var(--text-main); margin-top: 15px; margin-bottom: 8px; }
-        .guide-section ul, .guide-section ol { line-height: 1.7; color: var(--text-muted); font-weight: 500; padding-left: 20px; }
-        .guide-section li { margin-bottom: 8px; }
-        .guide-section strong { color: var(--text-main); }
-        .footer-copyright { text-align: center; padding: 30px 20px 10px 20px; color: var(--text-muted); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+        .guide-section h3 { font-size: 15px; color: var(--accent); margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .guide-section ul, .guide-section ol { line-height: 1.8; color: var(--text-muted); font-weight: 500; padding-left: 20px; font-size: 14px; }
+        .footer-copyright { text-align: center; padding: 40px 20px 20px 20px; color: var(--text-muted); font-weight: 700; font-size: 13px; letter-spacing: 1px; opacity: 0.7; }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body { background: white !important; color: black !important; padding: 0; }
+            .theme-toggle-fab, .theme-switcher-wrapper, .action-bar-wrapper, .guide-section, .footer-copyright, .custom-keyboard { display: none !important; }
+            .pan-zoom-wrapper { border: none !important; box-shadow: none !important; padding: 0 !important; overflow: visible !important; min-height: auto !important; display: flex !important; }
+            #fullBracketContainer { transform: scale(1) !important; margin: 0 !important; }
+            .match-box { box-shadow: none !important; border-color: #000 !important; }
+            .winner { background-color: #eee !important; color: #000 !important; }
+            .round-title { border-color: #000 !important; color: #000 !important; background: #fff !important; }
+            .bracket-wrapper.draw-lines .match-container::after, .bracket-wrapper.draw-lines .round:not(:first-child) .match-container::before { border-color: #000 !important; }
+        }
     </style>
 </head>
 <body>
 
-<div class="theme-switcher-wrapper">
-    <label for="themeSelect"><strong>🎨 TEMA:</strong></label>
-    <select id="themeSelect" onchange="changeTheme()">
-        <option value="light">Zizion Light</option>
-        <option value="esports">Esports Dark Mode</option>
-        <option value="sports">Dynamic Sports</option>
-        <option value="minimalist">Minimalist Pro</option>
-    </select>
+<button class="theme-toggle-fab" id="themeToggleBtn" title="Buka/Tutup Menu Tema">🎨</button>
+
+<div class="theme-switcher-wrapper" id="themeSwitcher">
+    <div class="theme-switcher-header" id="themeSwitcherHandle" title="Geser untuk memindahkan menu">
+        <span>🎨 Visual Styles</span>
+        <button class="close-switcher-btn" onclick="toggleThemeMenu()" title="Tutup">&times;</button>
+    </div>
+    <div class="theme-switcher-body">
+        <label>PILIH TEMA PRO:</label>
+        <div class="theme-btn-group">
+            <button class="theme-btn active-theme" onclick="setTheme('light')">Zizion Light (Mint)</button>
+            <button class="theme-btn" onclick="setTheme('esports')">Esports Cyber Dark</button>
+            <button class="theme-btn" onclick="setTheme('sports')">Dynamic Sports</button>
+            <button class="theme-btn" onclick="setTheme('minimalist')">Minimalist Pro</button>
+        </div>
+    </div>
 </div>
 
 <div class="celebration-overlay" id="celebrationModal">
@@ -339,14 +482,36 @@
         <div class="trophy-icon">🏆</div>
         <h2>Tournament Champion</h2>
         <div class="winner-name-display" id="winnerText">NAMA TIM</div>
-        <p style="color: #a3d9d2; font-size: 1.2rem; font-weight: 600; letter-spacing: 1px;">Berhasil Memenangkan Turnamen!</p>
+        <p style="color: var(--text-muted); font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Berhasil Memenangkan Turnamen!</p>
         <button class="btn-restart" onclick="closeCelebrationAndReset()">Tutup & Kembali</button>
+    </div>
+</div>
+
+<!-- Kustom Keyboard UI (Hanya muncul saat klik skor) -->
+<div class="custom-keyboard" id="customNumpad">
+    <div class="keyboard-header">
+        <span>Input Skor</span>
+        <button class="close-kb-btn" onclick="closeKeyboard()">Tutup ⬇</button>
+    </div>
+    <div class="keyboard-grid">
+        <button class="key-btn" onclick="typeNumber(1)">1</button>
+        <button class="key-btn" onclick="typeNumber(2)">2</button>
+        <button class="key-btn" onclick="typeNumber(3)">3</button>
+        <button class="key-btn" onclick="typeNumber(4)">4</button>
+        <button class="key-btn" onclick="typeNumber(5)">5</button>
+        <button class="key-btn" onclick="typeNumber(6)">6</button>
+        <button class="key-btn" onclick="typeNumber(7)">7</button>
+        <button class="key-btn" onclick="typeNumber(8)">8</button>
+        <button class="key-btn" onclick="typeNumber(9)">9</button>
+        <button class="key-btn action-key" onclick="backspaceKey()">⌫</button>
+        <button class="key-btn" onclick="typeNumber(0)">0</button>
+        <button class="key-btn submit-key" onclick="submitScoreFromKeyboard()">✓</button>
     </div>
 </div>
 
 <div class="container">
     <div class="header-wrapper" id="mainHeaderWrapper">
-        <div class="header" id="mainHeader"><h1>Zizion Tournament Bracket Generator</h1></div>
+        <div class="header"><h1>Zizion Tournament Bracket Pro</h1></div>
     </div>
 
     <div class="title-wrapper">
@@ -357,79 +522,86 @@
     <div class="action-bar-wrapper" id="actionBarWrapper">
         <div class="action-bar">
             <div class="action-bar-left">
-                <div style="font-size: 14px; font-weight: 600;">✨ Masukkan skor dan klik "✓", atau klik nama tim.</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-muted);">
+                    💡 <strong style="color:var(--text-main);">Tips:</strong> Klik nama tim untuk memenangkan, atau isi skor & klik "✓". Klik tim menang untuk mengedit skor.
+                </div>
                 <div class="zoom-controls">
                     <button onclick="zoomBracket('out')" title="Zoom Out">➖</button>
-                    <button onclick="zoomBracket('reset')" title="Reset Zoom">🔄</button>
+                    <button onclick="zoomBracket('reset')" title="Reset Zoom 100%">🔄</button>
                     <button onclick="zoomBracket('in')" title="Zoom In">➕</button>
                 </div>
             </div>
-            <button class="btn-secondary" onclick="forceReset()">↺ Format Ulang (Reset)</button>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="window.print()" title="Cetak atau Simpan PDF">🖨️ Cetak / PDF</button>
+                <button class="btn-danger" onclick="forceReset()" title="Reset dan Buat Baru">↺ Format Ulang</button>
+            </div>
         </div>
     </div>
 
     <div class="setup-card" id="setupCard">
         <div class="error-msg" id="errorMsg"></div>
         
-        <div class="section-title">1. Format Turnamen</div>
+        <div class="section-title">1. Pilih Sistem Kompetisi</div>
         <div class="format-grid">
             <div class="format-card active" onclick="selectFormat('single', this)">
                 <div class="format-title">Eliminasi Tunggal</div>
-                <div class="format-desc">Peserta yang kalah langsung gugur.</div>
+                <div class="format-desc">Sistem gugur standar. Kalah 1x langsung tereliminasi dari turnamen.</div>
             </div>
             <div class="format-card" onclick="selectFormat('double', this)">
                 <div class="format-title">Eliminasi Ganda</div>
-                <div class="format-desc">Ada Upper & Lower Bracket. Kalah dua kali gugur.</div>
+                <div class="format-desc">Memiliki Upper & Lower Bracket. Kalah 2x baru tereliminasi.</div>
             </div>
             <div class="format-card" onclick="selectFormat('round-robin', this)">
-                <div class="format-title">Round Robin</div>
-                <div class="format-desc">Semua peserta akan bertanding satu sama lain.</div>
+                <div class="format-title">Round Robin (Liga)</div>
+                <div class="format-desc">Semua peserta akan bertanding melawan satu sama lain secara bergiliran.</div>
             </div>
             <div class="format-card" onclick="selectFormat('swiss', this)">
                 <div class="format-title">Sistem Swiss</div>
-                <div class="format-desc">Pertandingan tanpa gugur, penempatan lawan secara dinamis.</div>
+                <div class="format-desc">Tanpa gugur. Mempertemukan tim dengan perolehan skor serupa setiap ronde.</div>
             </div>
             <div class="format-card" onclick="selectFormat('ffa', this)">
-                <div class="format-title">Free-for-all</div>
-                <div class="format-desc">Banyak peserta dalam 1 pertandingan sekaligus (Grup).</div>
+                <div class="format-title">Free-For-All (FFA)</div>
+                <div class="format-desc">Banyak peserta bertanding dalam 1 grup sekaligus (misal: Battle Royale).</div>
             </div>
         </div>
 
-        <div class="section-title">2. Detail & Peserta</div>
+        <div class="section-title">2. Detail & Daftar Peserta</div>
         <div class="input-group">
-            <label>Nama Turnamen</label>
-            <input type="text" id="tourneyName" placeholder="Contoh: Zizion Cup 2024...">
+            <label>Nama Turnamen / Event</label>
+            <input type="text" id="tourneyName" placeholder="Contoh: Zizion Championship Season 1...">
         </div>
         <div class="input-group">
-            <label>Daftar Tim (1 baris = 1 tim)</label>
-            <textarea id="participantsInput" placeholder="Ketik nama-nama tim di sini..."></textarea>
+            <label>Daftar Nama Tim (Ketik 1 Nama Per Baris)</label>
+            <!-- Menghilangkan contoh nama pada placeholder -->
+            <textarea id="participantsInput" placeholder="Masukkan 1 Nama Tim Per Baris...&#10;&#10;Contoh:&#10;Tim Alpha&#10;Tim Bravo&#10;Tim Charlie..."></textarea>
         </div>
 
-        <div class="section-title">3. Pengaturan Turnamen</div>
+        <div class="section-title">3. Pengaturan Tambahan</div>
         <div class="settings-list">
             <div class="toggle-row">
-                <span class="toggle-text">Tipe Pertandingan (Match Type)</span>
-                <select id="matchType" style="width: 150px; padding: 8px;">
-                    <option value="BO1">Best of 1</option>
-                    <option value="BO3">Best of 3</option>
-                    <option value="BO5">Best of 5</option>
+                <span class="toggle-text">Format Pertandingan (Match Type)</span>
+                <select id="matchType" style="width: 160px; padding: 10px;">
+                    <option value="BO1">Best of 1 (BO1)</option>
+                    <option value="BO3">Best of 3 (BO3)</option>
+                    <option value="BO5">Best of 5 (BO5)</option>
+                    <option value="BO7">Best of 7 (BO7)</option>
                 </select>
             </div>
             <div class="toggle-row">
-                <span class="toggle-text">Acak Posisi (Shuffle Seeds)</span>
+                <span class="toggle-text">Acak Posisi Tim (Randomize Seeds)</span>
                 <label class="switch"><input type="checkbox" id="randomizeSeeds" checked><span class="slider"></span></label>
             </div>
             <div class="toggle-row" id="thirdPlaceRow">
-                <span class="toggle-text">Sertakan pertandingan Perebutan Juara 3</span>
+                <span class="toggle-text">Sertakan Pertandingan Perebutan Juara 3</span>
                 <label class="switch"><input type="checkbox" id="include3rdPlace" checked><span class="slider"></span></label>
             </div>
             <div class="toggle-row">
-                <span class="toggle-text">Blind Draw (Sembunyikan angka Seed)</span>
+                <span class="toggle-text">Blind Draw (Sembunyikan Nomor Seed)</span>
                 <label class="switch"><input type="checkbox" id="blindDraw"><span class="slider"></span></label>
             </div>
         </div>
 
-        <button class="btn-primary" onclick="initTournament()">Buat Bracket</button>
+        <button class="btn-primary" onclick="initTournament()">⚡ Generate Bracket Sekarang</button>
     </div>
 
     <div class="pan-zoom-wrapper" id="panZoomWrapper">
@@ -437,32 +609,24 @@
     </div>
 
     <div class="setup-card guide-section" id="guideCard">
-        <div class="section-title">Panduan Penggunaan Zizion Tournament Bracket Generator</div>
-        <p style="font-size: 15px; line-height: 1.6; color: var(--text-muted); font-weight: 500;">
-            Selamat datang di Zizion Tournament Bracket Generator, solusi profesional untuk mengelola turnamen Anda dengan mudah, cepat, dan presisi. Aplikasi ini dirancang untuk mendukung berbagai format kompetisi agar penyelenggaraan event Anda berjalan lancar.
+        <div class="section-title">📖 Panduan Pro & Kemampuan Aplikasi</div>
+        <p style="font-size: 14px; line-height: 1.7; color: var(--text-muted);">
+            Zizion Tournament Bracket Pro dirancang dengan algoritma presisi tinggi untuk menyelenggarakan turnamen lokal hingga skala profesional. Fitur <strong>Auto-Save Real-Time</strong> melindungi progres pertandingan Anda secara otomatis bahkan jika browser ditutup tanpa sengaja.
         </p>
         
-        <h3>Fitur-Fitur Utama:</h3>
+        <h3>Pembaruan Fitur Unggulan:</h3>
         <ul>
-            <li><strong>Auto-Save:</strong> Progres turnamen otomatis tersimpan. Anda bisa menutup browser dan membukanya lagi tanpa kehilangan data.</li>
-            <li><strong>Theme Switcher:</strong> Ubah tema sesuai suasana turnamen (Esports, Sports, Minimalist).</li>
-            <li><strong>Zoom & Geser (Pan):</strong> Navigasi mudah untuk bracket besar dengan fitur zoom dan drag-to-scroll.</li>
-        </ul>
-        
-        <h4>5 Format Turnamen Fleksibel:</h4>
-        <ul>
-            <li><strong>Eliminasi Tunggal:</strong> Sistem gugur standar; peserta yang kalah langsung tereliminasi. Ideal untuk turnamen cepat.</li>
-            <li><strong>Eliminasi Ganda:</strong> Sistem dengan Upper Bracket dan Lower Bracket. Peserta memiliki "nyawa kedua" sebelum benar-benar tereliminasi.</li>
-            <li><strong>Round Robin:</strong> Sistem liga di mana setiap tim akan bertemu satu sama lain.</li>
-            <li><strong>Sistem Swiss:</strong> Format dinamis di mana peserta dengan skor yang sama akan dipertemukan di ronde berikutnya.</li>
-            <li><strong>Free-for-All (FFA):</strong> Pengelompokan peserta dalam grup.</li>
+            <li><strong>Tema & Custom Keyboard:</strong> Tampilan tabel menu tema baru, lengkap dengan fitur numpad bawaan bebas pop-up native agar input skor lebih rapi.</li>
+            <li><strong>Presisi Rata Tengah (Centered Alignment):</strong> Bingkai pertandingan kini dipusatkan menggunakan algoritma Flex-Wrap adaptif, sehingga tampilan di layar komputer maupun HP terlihat seimbang dan rapi.</li>
+            <li><strong>Edit & Undo Skor:</strong> Jika salah memasukkan pemenang atau skor, klik kembali pertandingan tersebut untuk mengubah atau mereset pemenang.</li>
+            <li><strong>Otomasi Lower Bracket (Double Elimination):</strong> Tim yang tereliminasi di Upper Bracket kini secara cerdas otomatis dialihkan ke putaran Lower Bracket yang tepat sesuai aturan esports standar internasional.</li>
+            <li><strong>Cetak & Simpan PDF:</strong> Klik tombol Cetak/PDF untuk langsung menghasilkan dokumen bagan turnamen beresolusi tinggi tanpa elemen menu yang mengganggu.</li>
         </ul>
     </div>
 
     <div class="footer-copyright">
-        © ZizionStudio 2026. All Rights Reserved.
+        © 2026 Zizion Studio • Professional Tournament Management Suite
     </div>
-
 </div>
 
 <script>
@@ -475,18 +639,130 @@
     let fireworksInterval; 
     let currentFormat = 'single';
     let config = { thirdPlace: false, blindDraw: false };
+    let isPanDragging = false; 
 
-    // ================= THEME CHANGER =================
-    function changeTheme() {
-        const theme = document.getElementById('themeSelect').value;
-        document.body.className = ''; // Reset
+    // ================= THEME SWITCHER LOGIC =================
+    function setTheme(theme) {
+        document.body.className = ''; 
         if(theme !== 'light') {
             document.body.classList.add(`theme-${theme}`);
         }
         localStorage.setItem('zizion_theme', theme);
+        
+        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
+        let activeBtn = document.querySelector(`.theme-btn[onclick="setTheme('${theme}')"]`);
+        if(activeBtn) activeBtn.classList.add('active-theme');
+    }
+
+    function toggleThemeMenu() {
+        const switcher = document.getElementById('themeSwitcher');
+        switcher.style.display = (switcher.style.display === 'flex') ? 'none' : 'flex';
     }
     
-    // ================= AUTO-SAVE (LOCAL STORAGE) =================
+    // ================= CUSTOM KEYBOARD LOGIC =================
+    let activeScoreInput = null;
+
+    document.addEventListener('focusin', function(e) {
+        if(e.target && e.target.classList.contains('score-input')) {
+            e.preventDefault(); 
+            activeScoreInput = e.target;
+            document.getElementById('customNumpad').classList.add('show');
+            
+            // Highlight baris
+            document.querySelectorAll('.player-row').forEach(row => row.style.backgroundColor = '');
+            const parentRow = e.target.closest('.player-row');
+            if(parentRow) parentRow.style.backgroundColor = 'var(--winner-bg)';
+        }
+    });
+
+    function typeNumber(num) {
+        if(activeScoreInput && activeScoreInput.value.length < 4) {
+            activeScoreInput.value += num;
+        }
+    }
+
+    function backspaceKey() {
+        if(activeScoreInput && activeScoreInput.value.length > 0) {
+            activeScoreInput.value = activeScoreInput.value.slice(0, -1);
+        }
+    }
+
+    function closeKeyboard() {
+        document.getElementById('customNumpad').classList.remove('show');
+        if(activeScoreInput) {
+            const parentRow = activeScoreInput.closest('.player-row');
+            if(parentRow) parentRow.style.backgroundColor = '';
+            
+            activeScoreInput.blur();
+            activeScoreInput = null;
+        }
+    }
+
+    function submitScoreFromKeyboard() {
+        if(activeScoreInput) {
+            const submitBtn = activeScoreInput.closest('.match-box').querySelector('.submit-score-btn');
+            closeKeyboard(); 
+            if(submitBtn) {
+                setTimeout(() => submitBtn.click(), 50); 
+            }
+        }
+    }
+
+    // ================= DRAG FAB BUTTON =================
+    const fabBtn = document.getElementById('themeToggleBtn');
+    let isDraggingFab = false, hasDraggedFab = false, fabStartX, fabStartY, initFabLeft, initFabTop;
+
+    const startDragFab = (clientX, clientY) => {
+        isDraggingFab = true; hasDraggedFab = false;
+        fabStartX = clientX; fabStartY = clientY;
+        initFabLeft = fabBtn.offsetLeft; initFabTop = fabBtn.offsetTop;
+        fabBtn.style.transition = 'none';
+    };
+
+    const moveDragFab = (clientX, clientY) => {
+        if (!isDraggingFab) return;
+        const dx = clientX - fabStartX, dy = clientY - fabStartY;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) hasDraggedFab = true;
+        let newLeft = Math.max(0, Math.min(window.innerWidth - fabBtn.offsetWidth, initFabLeft + dx));
+        let newTop = Math.max(0, Math.min(window.innerHeight - fabBtn.offsetHeight, initFabTop + dy));
+        fabBtn.style.left = newLeft + 'px'; fabBtn.style.top = newTop + 'px'; fabBtn.style.right = 'auto';
+    };
+
+    const endDragFab = () => {
+        if (isDraggingFab) {
+            isDraggingFab = false;
+            fabBtn.style.transition = 'transform 0.2s, background-color 0.3s';
+        }
+    };
+
+    fabBtn.addEventListener('mousedown', e => startDragFab(e.clientX, e.clientY));
+    document.addEventListener('mousemove', e => moveDragFab(e.clientX, e.clientY));
+    document.addEventListener('mouseup', endDragFab);
+
+    fabBtn.addEventListener('touchstart', e => startDragFab(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+    document.addEventListener('touchmove', e => { if (isDraggingFab) e.preventDefault(); moveDragFab(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
+    document.addEventListener('touchend', endDragFab);
+
+    fabBtn.addEventListener('click', e => { if (hasDraggedFab) e.preventDefault(); else toggleThemeMenu(); });
+
+    // ================= DRAG WIDGET TEMA =================
+    const switcher = document.getElementById('themeSwitcher');
+    const handle = document.getElementById('themeSwitcherHandle');
+    let isDraggingMenu = false, menuX = 0, menuY = 0;
+
+    handle.addEventListener('mousedown', e => {
+        if(e.target.classList.contains('close-switcher-btn')) return;
+        isDraggingMenu = true; menuX = e.clientX - switcher.offsetLeft; menuY = e.clientY - switcher.offsetTop;
+        handle.style.cursor = 'grabbing';
+    });
+    document.addEventListener('mousemove', e => {
+        if (!isDraggingMenu) return;
+        e.preventDefault();
+        switcher.style.left = Math.max(0, e.clientX - menuX) + 'px'; switcher.style.top = Math.max(0, e.clientY - menuY) + 'px'; switcher.style.right = 'auto';
+    });
+    document.addEventListener('mouseup', () => { isDraggingMenu = false; handle.style.cursor = 'grab'; });
+
+    // ================= AUTO-SAVE SYSTEM =================
     function saveTournamentState() {
         if(tournamentData.length === 0) return;
         const state = {
@@ -494,83 +770,62 @@
             tourneyName: document.getElementById('displayTourneyName').innerText,
             subtitle: document.getElementById('displaySubtitle').innerText
         };
-        localStorage.setItem('zizion_saved_tournament', JSON.stringify(state));
+        localStorage.setItem('zizion_saved_tournament_pro', JSON.stringify(state));
     }
 
     function loadTournamentState() {
-        // Load Theme
-        const savedTheme = localStorage.getItem('zizion_theme');
-        if(savedTheme) {
-            document.getElementById('themeSelect').value = savedTheme;
-            changeTheme();
-        }
+        const savedTheme = localStorage.getItem('zizion_theme') || 'light';
+        setTheme(savedTheme);
 
-        // Load Bracket Data
-        const savedData = localStorage.getItem('zizion_saved_tournament');
+        const savedData = localStorage.getItem('zizion_saved_tournament_pro');
         if (savedData) {
             const state = JSON.parse(savedData);
-            tournamentData = state.tournamentData;
-            lowerBracketData = state.lowerBracketData;
-            thirdPlaceMatch = state.thirdPlaceMatch;
-            totalRounds = state.totalRounds;
-            matchCounter = state.matchCounter;
-            currentFormat = state.currentFormat;
-            config = state.config;
+            tournamentData = state.tournamentData; lowerBracketData = state.lowerBracketData; thirdPlaceMatch = state.thirdPlaceMatch; totalRounds = state.totalRounds; matchCounter = state.matchCounter; currentFormat = state.currentFormat; config = state.config;
 
             document.getElementById('setupCard').style.display = 'none';
             document.getElementById('guideCard').style.display = 'none';
             document.getElementById('mainHeaderWrapper').style.display = 'none';
             
             document.getElementById('actionBarWrapper').style.display = 'block';
-            document.getElementById('panZoomWrapper').style.display = 'block';
+            document.getElementById('panZoomWrapper').style.display = 'flex'; 
             
             const titleDisplay = document.getElementById('displayTourneyName');
             const subDisplay = document.getElementById('displaySubtitle');
-            titleDisplay.innerText = state.tourneyName;
-            subDisplay.innerText = state.subtitle;
-            titleDisplay.style.display = 'block';
-            subDisplay.style.display = 'block';
+            titleDisplay.innerText = state.tourneyName; subDisplay.innerText = state.subtitle;
+            titleDisplay.style.display = 'block'; subDisplay.style.display = 'block';
 
             renderBracket();
         }
     }
-    
-    // Load state saat halaman pertama kali dibuka
     window.addEventListener('DOMContentLoaded', loadTournamentState);
 
     // ================= ZOOM & PAN LOGIC =================
     let currentZoom = 1;
     function zoomBracket(action) {
         const container = document.getElementById('fullBracketContainer');
-        if (action === 'in' && currentZoom < 2) currentZoom += 0.1;
-        else if (action === 'out' && currentZoom > 0.4) currentZoom -= 0.1;
+        if (action === 'in' && currentZoom < 1.8) currentZoom += 0.15;
+        else if (action === 'out' && currentZoom > 0.4) currentZoom -= 0.15;
         else if (action === 'reset') currentZoom = 1;
         container.style.transform = `scale(${currentZoom})`;
     }
 
     const panWrapper = document.getElementById('panZoomWrapper');
-    let isDown = false, startX, startY, scrollLeft, scrollTop, isDragging = false;
+    let isDown = false, startX, startY, scrollLeft, scrollTop;
 
-    panWrapper.addEventListener('mousedown', (e) => {
-        isDown = true; isDragging = false;
-        panWrapper.style.cursor = 'grabbing';
-        startX = e.pageX - panWrapper.offsetLeft;
-        startY = e.pageY - panWrapper.offsetTop;
-        scrollLeft = panWrapper.scrollLeft;
-        scrollTop = panWrapper.scrollTop;
+    panWrapper.addEventListener('mousedown', e => {
+        isDown = true; isPanDragging = false; panWrapper.style.cursor = 'grabbing';
+        startX = e.pageX - panWrapper.offsetLeft; startY = e.pageY - panWrapper.offsetTop;
+        scrollLeft = panWrapper.scrollLeft; scrollTop = panWrapper.scrollTop;
     });
     panWrapper.addEventListener('mouseleave', () => { isDown = false; panWrapper.style.cursor = 'grab'; });
     panWrapper.addEventListener('mouseup', () => { isDown = false; panWrapper.style.cursor = 'grab'; });
-    panWrapper.addEventListener('mousemove', (e) => {
+    panWrapper.addEventListener('mousemove', e => {
         if (!isDown) return;
         e.preventDefault();
-        const x = e.pageX - panWrapper.offsetLeft;
-        const y = e.pageY - panWrapper.offsetTop;
-        const walkX = (x - startX) * 1.5; 
-        const walkY = (y - startY) * 1.5; 
-        if (Math.abs(walkX) > 5 || Math.abs(walkY) > 5) isDragging = true;
-        panWrapper.scrollLeft = scrollLeft - walkX;
-        panWrapper.scrollTop = scrollTop - walkY;
+        const x = e.pageX - panWrapper.offsetLeft, y = e.pageY - panWrapper.offsetTop;
+        const walkX = (x - startX) * 1.5, walkY = (y - startY) * 1.5; 
+        if (Math.abs(walkX) > 5 || Math.abs(walkY) > 5) isPanDragging = true; 
+        panWrapper.scrollLeft = scrollLeft - walkX; panWrapper.scrollTop = scrollTop - walkY;
     });
 
     // ================= TOURNAMENT LOGIC =================
@@ -595,10 +850,10 @@
         let rawParticipants = inputArea.value.split('\n').map(name => name.trim()).filter(name => name !== "");
 
         if (rawParticipants.length < 3 && config.thirdPlace && currentFormat === 'single') {
-            errorMsg.innerText = "Minimal harus ada 3 peserta jika mengaktifkan Perebutan Juara 3.";
+            errorMsg.innerText = "⚠️ Minimal harus ada 3 peserta jika mengaktifkan Perebutan Juara 3.";
             errorMsg.style.display = 'block'; return;
         } else if (rawParticipants.length < 2) {
-            errorMsg.innerText = "Minimal harus ada 2 peserta.";
+            errorMsg.innerText = "⚠️ Minimal harus ada 2 peserta untuk memulai turnamen.";
             errorMsg.style.display = 'block'; return;
         }
 
@@ -607,22 +862,15 @@
         document.getElementById('mainHeaderWrapper').style.display = 'none';
         
         document.getElementById('actionBarWrapper').style.display = 'block';
-        document.getElementById('panZoomWrapper').style.display = 'block';
+        document.getElementById('panZoomWrapper').style.display = 'flex'; 
         
         const titleDisplay = document.getElementById('displayTourneyName');
         const subDisplay = document.getElementById('displaySubtitle');
-        titleDisplay.innerText = titleInput || "Zizion Tournament";
+        titleDisplay.innerText = titleInput || "Zizion Championship";
         
-        let formatText = "Format Turnamen";
-        if (currentFormat === 'single') formatText = 'Eliminasi Tunggal';
-        else if (currentFormat === 'double') formatText = 'Eliminasi Ganda';
-        else if (currentFormat === 'round-robin') formatText = 'Round Robin';
-        else if (currentFormat === 'swiss') formatText = 'Sistem Swiss';
-        else if (currentFormat === 'ffa') formatText = 'Free-for-all';
-        
+        let formatText = { 'single': 'Eliminasi Tunggal', 'double': 'Eliminasi Ganda', 'round-robin': 'Round Robin (Liga)', 'swiss': 'Sistem Swiss', 'ffa': 'Free-For-All' }[currentFormat];
         subDisplay.innerText = `${formatText} • ${matchType}`;
-        titleDisplay.style.display = 'block';
-        subDisplay.style.display = 'block';
+        titleDisplay.style.display = 'block'; subDisplay.style.display = 'block';
 
         let participants = rawParticipants.map((name, index) => ({ seed: index + 1, name: name }));
         if (isRandomize) {
@@ -637,18 +885,14 @@
         else if (currentFormat === 'ffa') generateFFA(participants);
         else generateElimination(participants, currentFormat === 'double');
         
-        currentZoom = 1; 
-        zoomBracket('reset');
-        saveTournamentState(); // Auto-save
+        currentZoom = 1; zoomBracket('reset');
+        saveTournamentState();
     }
 
     function generateRoundRobin(participants) {
         if (participants.length % 2 !== 0) participants.push({ seed: null, name: "BYE" });
-        const numRounds = participants.length - 1;
-        const halfSize = participants.length / 2;
-        tournamentData = []; matchCounter = 1;
-        
-        let rotPlayers = [...participants];
+        const numRounds = participants.length - 1, halfSize = participants.length / 2;
+        tournamentData = []; matchCounter = 1; let rotPlayers = [...participants];
 
         for (let r = 0; r < numRounds; r++) {
             let roundMatches = [];
@@ -658,13 +902,10 @@
             tournamentData.push(roundMatches);
             rotPlayers.splice(1, 0, rotPlayers.pop());
         }
-
-        tournamentData.forEach(round => {
-            round.forEach(match => {
-                if (match.p1 && match.p1.name === "BYE") match.winner = match.p2;
-                if (match.p2 && match.p2.name === "BYE") match.winner = match.p1;
-            });
-        });
+        tournamentData.forEach(round => round.forEach(match => {
+            if (match.p1?.name === "BYE") match.winner = match.p2;
+            if (match.p2?.name === "BYE") match.winner = match.p1;
+        }));
         renderBracket();
     }
 
@@ -672,7 +913,6 @@
         if (participants.length % 2 !== 0) participants.push({ seed: null, name: "BYE" });
         const numRounds = Math.ceil(Math.log2(participants.length)) || 1;
         tournamentData = []; matchCounter = 1;
-        
         for (let r = 0; r < numRounds; r++) {
             let roundMatches = [];
             for (let i = 0; i < participants.length / 2; i++) {
@@ -684,12 +924,9 @@
     }
 
     function generateFFA(participants) {
-        tournamentData = []; matchCounter = 1;
-        let roundMatches = [];
-        let groupSize = 4;
+        tournamentData = []; matchCounter = 1; let roundMatches = [], groupSize = 4;
         for (let i = 0; i < participants.length; i += groupSize) {
-            let groupPlayers = participants.slice(i, i + groupSize);
-            roundMatches.push({ id: matchCounter++, players: groupPlayers, winner: null });
+            roundMatches.push({ id: matchCounter++, players: participants.slice(i, i + groupSize), winner: null });
         }
         tournamentData.push(roundMatches);
         renderBracket();
@@ -727,12 +964,13 @@
         }
 
         tournamentData[0].forEach((match, index) => {
-            if (match.p2 && match.p2.name === "BYE") advanceWinner(0, index, match.p1, true, false); 
-            else if (match.p1 && match.p1.name === "BYE") advanceWinner(0, index, match.p2, true, false);
+            if (match.p2?.name === "BYE") advanceWinner(0, index, match.p1, true, false); 
+            else if (match.p1?.name === "BYE") advanceWinner(0, index, match.p2, true, false);
         });
         renderBracket();
     }
 
+    // ================= ADVANCE WINNER & ROUTING LOGIC =================
     function advanceWinner(roundIndex, matchIndex, winnerObj, isAutoPass = false, isLowerBracket = false) {
         if (!winnerObj || winnerObj.name === "BYE") return;
         
@@ -751,7 +989,13 @@
         }
 
         let match = dataTarget[roundIndex][matchIndex];
-        match.winner = winnerObj;
+        
+        if (match.winner && !isAutoPass && confirm(`Ubah pemenang Match M${match.id} menjadi ${winnerObj.name}?`)) {
+            match.winner = winnerObj;
+        } else {
+            match.winner = winnerObj;
+        }
+
         let loserObj = (winnerObj === match.p1) ? match.p2 : match.p1;
 
         if (currentFormat === 'round-robin' || currentFormat === 'swiss') {
@@ -768,55 +1012,70 @@
                 if (isFirstPlayer) tournamentData[nextRoundIndex][nextMatchIndex].p1 = winnerObj;
                 else tournamentData[nextRoundIndex][nextMatchIndex].p2 = winnerObj;
 
-                if (config.thirdPlace && nextRoundIndex === totalRounds - 1 && thirdPlaceMatch) {
+                if (config.thirdPlace && nextRoundIndex === totalRounds - 1 && thirdPlaceMatch && loserObj) {
                     if (isFirstPlayer) thirdPlaceMatch.p1 = loserObj;
                     else thirdPlaceMatch.p2 = loserObj;
                     thirdPlaceMatch.winner = null; 
                 }
 
                 let targetMatch = tournamentData[nextRoundIndex][nextMatchIndex];
-                if (targetMatch.p1 && targetMatch.p1.name === "BYE") advanceWinner(nextRoundIndex, nextMatchIndex, targetMatch.p2, true, false);
-                if (targetMatch.p2 && targetMatch.p2.name === "BYE") advanceWinner(nextRoundIndex, nextMatchIndex, targetMatch.p1, true, false);
+                if (targetMatch.p1?.name === "BYE") advanceWinner(nextRoundIndex, nextMatchIndex, targetMatch.p2, true, false);
+                if (targetMatch.p2?.name === "BYE") advanceWinner(nextRoundIndex, nextMatchIndex, targetMatch.p1, true, false);
             } 
             else if (currentFormat === 'single' && !isAutoPass) {
                 triggerCelebration(winnerObj.name);
             }
+
+            if (currentFormat === 'double' && loserObj && loserObj.name !== 'BYE' && lowerBracketData.length > 0) {
+                let lbRoundIndex = (roundIndex === 0) ? 0 : (roundIndex * 2 - 1);
+                if (lbRoundIndex < lowerBracketData.length) {
+                    let lbMatchIndex = (roundIndex === 0) ? Math.floor(matchIndex / 2) : matchIndex;
+                    lbMatchIndex = Math.min(lbMatchIndex, lowerBracketData[lbRoundIndex].length - 1);
+                    
+                    let targetLBMatch = lowerBracketData[lbRoundIndex][lbMatchIndex];
+                    if (!targetLBMatch.p1) targetLBMatch.p1 = loserObj;
+                    else targetLBMatch.p2 = loserObj;
+                    
+                    if (targetLBMatch.p1?.name === "BYE") advanceWinner(lbRoundIndex, lbMatchIndex, targetLBMatch.p2, true, true);
+                    else if (targetLBMatch.p2?.name === "BYE") advanceWinner(lbRoundIndex, lbMatchIndex, targetLBMatch.p1, true, true);
+                }
+            }
+        } else {
+            if (nextRoundIndex < lowerBracketData.length) {
+                let nextMatchIndex = (roundIndex % 2 === 0) ? matchIndex : Math.floor(matchIndex / 2);
+                let targetLBMatch = lowerBracketData[nextRoundIndex][nextMatchIndex];
+                
+                if (!targetLBMatch.p1 || roundIndex % 2 === 0) targetLBMatch.p1 = winnerObj;
+                else targetLBMatch.p2 = winnerObj;
+            } else if (!isAutoPass) {
+                triggerCelebration(winnerObj.name + " (Juara Lower Bracket)");
+            }
         }
+        
         saveTournamentState();
         renderBracket();
     }
 
     function submitScore(roundIndex, matchIndex, isLowerBracket = false) {
         if (currentFormat === 'ffa') {
-            let match = tournamentData[0][matchIndex];
-            let highestScore = -1;
-            let winner = null;
-            
+            let match = tournamentData[0][matchIndex], highestScore = -1, winner = null;
             match.players.forEach(p => {
                 let score = parseInt(document.getElementById(`score_ffa_m${matchIndex}_p${p.seed}`).value) || 0;
                 if (score > highestScore) { highestScore = score; winner = p; }
             });
-            
-            if (winner) advanceWinner(roundIndex, matchIndex, winner);
-            return;
+            if (winner) advanceWinner(roundIndex, matchIndex, winner); return;
         }
         
-        let p1Id = '', p2Id = '';
-        if(roundIndex === '3rd') { p1Id = `score_3rd_p1`; p2Id = `score_3rd_p2`; }
-        else {
-            let prefix = isLowerBracket ? 'lb' : 'ub';
-            p1Id = `score_${prefix}_r${roundIndex}_m${matchIndex}_p1`;
-            p2Id = `score_${prefix}_r${roundIndex}_m${matchIndex}_p2`;
-        }
+        let p1Id = (roundIndex === '3rd') ? 'score_3rd_p1' : `score_${isLowerBracket ? 'lb' : 'ub'}_r${roundIndex}_m${matchIndex}_p1`;
+        let p2Id = (roundIndex === '3rd') ? 'score_3rd_p2' : `score_${isLowerBracket ? 'lb' : 'ub'}_r${roundIndex}_m${matchIndex}_p2`;
         
         const score1 = parseInt(document.getElementById(p1Id).value) || 0;
         const score2 = parseInt(document.getElementById(p2Id).value) || 0;
-        
         let match = (roundIndex === '3rd') ? thirdPlaceMatch : (isLowerBracket ? lowerBracketData[roundIndex][matchIndex] : tournamentData[roundIndex][matchIndex]);
 
         if (score1 > score2) advanceWinner(roundIndex, matchIndex, match.p1, false, isLowerBracket);
         else if (score2 > score1) advanceWinner(roundIndex, matchIndex, match.p2, false, isLowerBracket);
-        else alert("Skor seri! Mohon berikan selisih poin.");
+        else alert("⚠️ Skor seri! Harap tentukan selisih poin untuk menetapkan pemenang.");
     }
 
     // ================= RENDER UI =================
@@ -825,20 +1084,16 @@
         container.innerHTML = '';
 
         if (currentFormat === 'round-robin' || currentFormat === 'swiss' || currentFormat === 'ffa') {
-            container.innerHTML = '<div class="bracket-section-title">Jadwal Pertandingan</div>';
-            const wrapper = document.createElement('div');
-            wrapper.className = 'bracket-wrapper no-lines';
+            container.innerHTML = '<div class="bracket-section-title">🏆 Jadwal Pertandingan</div>';
+            const wrapper = document.createElement('div'); wrapper.className = 'bracket-wrapper no-lines';
             
             tournamentData.forEach((round, roundIndex) => {
-                const roundDiv = document.createElement('div');
-                roundDiv.className = 'round';
-                
-                let title = (currentFormat === 'ffa') ? `Grup (Penyisihan)` : `Ronde ${roundIndex + 1}`;
+                const roundDiv = document.createElement('div'); roundDiv.className = 'round';
+                let title = (currentFormat === 'ffa') ? `Grup / Penyisihan` : `Ronde ${roundIndex + 1}`;
                 roundDiv.innerHTML = `<div class="round-title">${title}</div>`;
                 
                 round.forEach((match, matchIndex) => {
-                    const matchContainer = document.createElement('div');
-                    matchContainer.className = 'match-container';
+                    const matchContainer = document.createElement('div'); matchContainer.className = 'match-container';
                     matchContainer.appendChild(createMatchDOM(match, roundIndex, matchIndex, false, false));
                     roundDiv.appendChild(matchContainer);
                 });
@@ -846,17 +1101,15 @@
             });
             container.appendChild(wrapper);
         } else {
-            if (currentFormat === 'double') container.innerHTML += '<div class="bracket-section-title">Upper Bracket</div>';
+            if (currentFormat === 'double') container.innerHTML += '<div class="bracket-section-title">🔥 Upper Bracket</div>';
             
-            const wrapperUB = document.createElement('div');
-            wrapperUB.className = 'bracket-wrapper draw-lines';
+            const wrapperUB = document.createElement('div'); wrapperUB.className = 'bracket-wrapper draw-lines';
             buildBracketHTML(wrapperUB, tournamentData, false);
             container.appendChild(wrapperUB);
 
             if (currentFormat === 'double' && lowerBracketData.length > 0) {
-                container.innerHTML += '<div class="bracket-section-title">Lower Bracket</div>';
-                const wrapperLB = document.createElement('div');
-                wrapperLB.className = 'bracket-wrapper draw-lines';
+                container.innerHTML += '<div class="bracket-section-title" style="margin-top:60px;">🛡️ Lower Bracket</div>';
+                const wrapperLB = document.createElement('div'); wrapperLB.className = 'bracket-wrapper draw-lines';
                 buildBracketHTML(wrapperLB, lowerBracketData, true);
                 container.appendChild(wrapperLB);
             }
@@ -865,31 +1118,25 @@
 
     function buildBracketHTML(wrapper, dataSet, isLowerBracket) {
         let roundsCount = dataSet.length;
-        
         dataSet.forEach((round, roundIndex) => {
-            const roundDiv = document.createElement('div');
-            roundDiv.className = 'round';
-
+            const roundDiv = document.createElement('div'); roundDiv.className = 'round';
             let rTitle = `Ronde ${roundIndex + 1}`;
             if (!isLowerBracket) {
-                if (roundIndex === roundsCount - 1) rTitle = currentFormat === 'double' ? "Final Upper Bracket" : "Grand Final";
+                if (roundIndex === roundsCount - 1) rTitle = currentFormat === 'double' ? "Final Upper Bracket" : "👑 Grand Final";
                 else if (roundIndex === roundsCount - 2) rTitle = "Semifinal";
                 else if (roundIndex === roundsCount - 3) rTitle = "Perempat Final";
             } else {
-                if (roundIndex === roundsCount - 1) rTitle = "Final Lower Bracket";
+                if (roundIndex === roundsCount - 1) rTitle = "👑 Final Lower Bracket";
             }
-
             roundDiv.innerHTML = `<div class="round-title">${rTitle}</div>`;
 
             round.forEach((match, matchIndex) => {
-                const matchContainer = document.createElement('div');
-                matchContainer.className = 'match-container';
+                const matchContainer = document.createElement('div'); matchContainer.className = 'match-container';
                 matchContainer.appendChild(createMatchDOM(match, roundIndex, matchIndex, false, isLowerBracket));
                 
                 if (!isLowerBracket && roundIndex === roundsCount - 1 && config.thirdPlace && thirdPlaceMatch) {
-                    const thirdContainer = document.createElement('div');
-                    thirdContainer.className = 'third-place-wrapper';
-                    thirdContainer.innerHTML = `<div class="round-title" style="background:var(--bronze-bg); border-color:var(--bronze-border);">Bronze Match (Juara 3)</div>`;
+                    const thirdContainer = document.createElement('div'); thirdContainer.className = 'third-place-wrapper';
+                    thirdContainer.innerHTML = `<div class="round-title" style="background:var(--bronze-bg); border-color:var(--bronze-border); color:var(--bronze-border);">🥉 Bronze Match (Juara 3)</div>`;
                     thirdContainer.appendChild(createMatchDOM(thirdPlaceMatch, '3rd', 0, true, false));
                     matchContainer.appendChild(thirdContainer);
                 }
@@ -901,7 +1148,7 @@
 
     function createMatchDOM(match, roundIndex, matchIndex, isBronze = false, isLowerBracket = false) {
         const matchBox = document.createElement('div');
-        matchBox.className = `match-box ${isBronze ? 'third-place-box' : ''}`;
+        matchBox.className = `match-box ${isBronze ? 'third-place-box' : ''} ${match.winner ? 'finished' : ''}`;
         
         const matchIdLabel = document.createElement('div');
         matchIdLabel.className = 'match-id';
@@ -911,40 +1158,28 @@
         const createPlayerRow = (playerData, isP1) => {
             const row = document.createElement('div');
             const isWinner = match.winner && playerData && match.winner.seed === playerData.seed;
-            row.className = `player-row ${isWinner ? 'winner' : ''}`;
+            row.className = `player-row ${isWinner ? 'winner' : ''} ${!playerData ? 'empty' : ''}`;
             
             if (playerData) {
                 const isBye = playerData.name === 'BYE';
                 let scoreHtml = '';
+                let isMatchPlayable = (currentFormat === 'ffa') ? true : (match.p1 && match.p2 && match.p1.name !== 'BYE' && match.p2.name !== 'BYE');
                 
-                let isMatchPlayable = false;
-                if (currentFormat === 'ffa') {
-                    isMatchPlayable = !match.winner && !isBye;
-                } else {
-                    isMatchPlayable = match.p1 && match.p2 && match.p1.name !== 'BYE' && match.p2.name !== 'BYE' && !match.winner;
-                }
-                
-                if (isMatchPlayable) {
-                    let sId = '';
-                    if (currentFormat === 'ffa') {
-                        sId = `score_ffa_m${matchIndex}_p${playerData.seed}`;
-                    } else if (roundIndex === '3rd') {
-                        sId = `score_3rd_${isP1 ? 'p1' : 'p2'}`;
-                    } else {
-                        sId = `score_${isLowerBracket ? 'lb' : 'ub'}_r${roundIndex}_m${matchIndex}_${isP1 ? 'p1' : 'p2'}`;
-                    }
-                    scoreHtml = `<input type="number" id="${sId}" class="score-input" placeholder="0" min="0" onmousedown="event.stopPropagation()">`;
+                if (isMatchPlayable && !isBye) {
+                    let sId = (currentFormat === 'ffa') ? `score_ffa_m${matchIndex}_p${playerData.seed}` : ((roundIndex === '3rd') ? `score_3rd_${isP1 ? 'p1' : 'p2'}` : `score_${isLowerBracket ? 'lb' : 'ub'}_r${roundIndex}_m${matchIndex}_${isP1 ? 'p1' : 'p2'}`);
+                    // Menggunakan text dan inputmode none untuk integrasi keyboard kustom tanpa popup native
+                    scoreHtml = `<input type="text" inputmode="none" id="${sId}" class="score-input" placeholder="0" onmousedown="event.stopPropagation()">`;
                 }
 
-                const seedText = (config.blindDraw || !playerData.seed) ? '' : playerData.seed;
+                const seedText = (config.blindDraw || !playerData.seed) ? '' : `${playerData.seed}.`;
                 row.innerHTML = `<span class="seed-num">${seedText}</span><span class="player-name ${isBye ? 'bye' : ''}">${playerData.name}</span>${scoreHtml}`;
                 
-                row.onclick = (e) => {
-                    if (isDragging) return; // Mencegah klik saat melakukan drag (Pan)
+                row.onclick = e => {
+                    if (isPanDragging) return; 
                     if (!isBye && e.target.tagName !== 'INPUT') advanceWinner(roundIndex, matchIndex, playerData, false, isLowerBracket);
                 };
             } else {
-                row.innerHTML = `<span class="seed-num"></span><span class="player-name" style="color: var(--text-muted);">Menunggu...</span>`;
+                row.innerHTML = `<span class="seed-num"></span><span class="player-name" style="color: var(--text-muted); font-style: italic;">Menunggu lawan...</span>`;
             }
             return row;
         };
@@ -956,44 +1191,37 @@
             matchBox.appendChild(createPlayerRow(match.p2, false));
         }
         
-        let hasPlayableMatch = false;
-        if (currentFormat === 'ffa') hasPlayableMatch = !match.winner;
-        else hasPlayableMatch = match.p1 && match.p2 && match.p1.name !== 'BYE' && match.p2.name !== 'BYE' && !match.winner;
-
+        let hasPlayableMatch = (currentFormat === 'ffa') ? true : (match.p1 && match.p2 && match.p1.name !== 'BYE' && match.p2.name !== 'BYE');
         if (hasPlayableMatch) {
             const submitBtn = document.createElement('button');
             submitBtn.className = 'submit-score-btn'; submitBtn.innerHTML = '✓';
             if (isBronze) submitBtn.style.background = 'var(--bronze-border)';
-            submitBtn.onclick = (e) => { 
-                e.stopPropagation(); 
-                if(!isDragging) submitScore(roundIndex, matchIndex, isLowerBracket); 
-            };
+            submitBtn.onclick = e => { e.stopPropagation(); if(!isPanDragging) submitScore(roundIndex, matchIndex, isLowerBracket); };
             matchBox.appendChild(submitBtn);
         }
         return matchBox;
     }
 
+    // ================= CELEBRATION & RESET =================
     function triggerCelebration(winnerName) {
         document.getElementById('winnerText').innerText = winnerName;
         document.getElementById('celebrationModal').style.display = 'flex';
         
         const cheerAudio = new Audio('https://actions.google.com/sounds/v1/crowds/stadium_cheer.ogg');
-        cheerAudio.volume = 0.7; cheerAudio.play().catch(e => console.log(e));
+        cheerAudio.volume = 0.6; cheerAudio.play().catch(() => {});
         
-        const duration = 12 * 1000; 
-        const animationEnd = Date.now() + duration;
+        const duration = 10 * 1000, animationEnd = Date.now() + duration;
         const defaults = { startVelocity: 45, spread: 360, ticks: 100, zIndex: 10000 };
 
-        confetti({ particleCount: 200, spread: 120, origin: { y: 0.6 }, zIndex: 10000, colors: ['#d4af37', '#fcf6ba', '#ffffff', '#82d0c8'] });
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, zIndex: 10000, colors: ['#f1c40f', '#f39c12', '#ffffff', '#1abc9c'] });
 
-        fireworksInterval = setInterval(function() {
+        fireworksInterval = setInterval(() => {
             const timeLeft = animationEnd - Date.now();
             if (timeLeft <= 0) return clearInterval(fireworksInterval);
-            const particleCount = 60 * (timeLeft / duration);
-            
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * (0.3 - 0.1) + 0.1, y: Math.random() - 0.2 }, colors: ['#d4af37', '#ffffff'] }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * (0.9 - 0.7) + 0.7, y: Math.random() - 0.2 }, colors: ['#d4af37', '#82d0c8'] }));
-        }, 300);
+            const particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.2 + 0.1, y: Math.random() - 0.2 }, colors: ['#f1c40f', '#ffffff'] }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.2 + 0.7, y: Math.random() - 0.2 }, colors: ['#f1c40f', '#00f2fe'] }));
+        }, 350);
     }
 
     function closeCelebrationAndReset() {
@@ -1002,8 +1230,8 @@
     }
 
     function forceReset() {
-        if(confirm("Anda yakin ingin mereset format turnamen ini? Semua data progress akan dihapus.")) {
-            localStorage.removeItem('zizion_saved_tournament'); // Hapus data auto-save
+        if(confirm("⚠️ Apakah Anda yakin ingin mereset turnamen ini? Semua progres pertandingan akan dihapus.")) {
+            localStorage.removeItem('zizion_saved_tournament_pro');
             
             document.getElementById('setupCard').style.display = 'block';
             document.getElementById('guideCard').style.display = 'block'; 
